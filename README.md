@@ -1,6 +1,6 @@
 # Notes
 
-I was a member on a team responsible for migrating to a new CI environment. I treating my notes as a JIRA ticket.
+I'm on a team responsible for migrating to a new CI environment. I treating my notes as a JIRA ticket storing them here.
 
 # Issue
 
