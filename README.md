@@ -6,19 +6,29 @@ I'm on a team responsible for migrating to a new CI environment. I treating my n
 
 We have a number of OpenStack VMs allocated to CI for our projects. Each project has a Jenkins container that manages a develop, qa and review environment for the project. Each of the stated environments have multiple containers running.
 
-List of services currently offered:
-
-- Apache or Nginx
-- Mariadb
-- Memcached or Redis
-- Solr or ElasticSearch
-- Varnish
-
 Looking for something to manage our containers that is not docker-compose and Jenkins. We reviewed Docker Swarm, OpenShift, and GKE for container management settling on Google Kubernetes Engine (GKE) and Gitlab. We will use GKE to manage our containers and Gitlab will replace Jenkins.
 
 We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 
 # Analysis
+
+## Project Requirements
+- Gitlab project
+- TLS
+- Authentication (Via google account or AWS Cognito)
+
+## List of services
+
+- Starter project with predefined `.gitlab-ci.yml` and Helm chart
+- Apache or Nginx
+- Mariadb
+- Memcached or Redis
+- Solr (custom subchart) or ElasticSearch
+- Varnish
+- Mailhog
+- Extra domain with "basic auth" just for browerstack, cypress and other testing tools
+- Not limited to current list of services.
+
 
 ## Actions
 
@@ -26,29 +36,33 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 - Team created a cluster, deployed the needed components, connect the cluster to a Gitlab project and ran a project from the environment. This cluster had two node-pools builder and worker. RBAC Manager (per user)
 - Training and Professional development. ([CKAD](certs/))
 - Reviewed Knative serving considering scale-to-zero for resource management
+- Reviewed Network Policies. GKE uses Tigera's [Calico](https://www.projectcalico.org/)
+- Reviewed [Velero](https://velero.io/) for DR and as migration tool. Allowing us to migrate to other cloud providers Kubernetes offering with little effort if we needed to.
+- Reviewed SysDig Monitoring and watched their youtube playlist [here](https://www.youtube.com/playlist?list=PLrUjPk-W0lae7KuCFvmdbWj9Powm7Ryu0). (currently using in production)
 - Team created migration plan
 - Team invited other projects that wanted to help us better understand the requirements needed to run the cluster.
 - Team member created starter project containing a Helm chart for the workloads
-- Defined labels for namespaces (RBAC-Manager
+- Defined labels for namespaces (RBAC-Manager requirement)
 - Created new cluster that would become the "production" one used for all projects. Requirements: RBAC with integration with Google Groups, network policies
-- Deployed RBAC-Manager to manage RBAC Rolebindings (per google group)
+- Deployed [RBAC-Manager](docs/RBAC-MANAGER.md) to manage RBAC Rolebindings (per google group)
 - Team member created an external IP for the ingress controller
-- Deployed Ingress Nginx to manage incoming traffic into the cluster
+- Deployed [Ingress Nginx](docs/INGRESS-NGINX.md) to manage incoming traffic into the cluster
 - Team discovered required annontations for certmanager and proxy-authentication
-- Deployed Prometheus & Grafana for observability (this was done via the GCP Console)
-- Deployed WeaveScope for observability
+- Deployed [Prometheus & Grafana](docs/PROMETHEUS-GRAFANA.md) for observability (this was done via the GCP Console)
+- Deployed [WeaveScope](docs/WEAVESCOPE.md) for observability
 - Migrated projects off POC cluster to new cluster and deleted it.
 - Use `stern` for log tailing since it monitors all of the containers in a pod
 - Use `octant` as a graphical debugging tool
+
 
 
 ## Issues
 
 - What RBAC permissions will allow project team members to debug their workloads without impacting other projects running in the cluster?
 - Builder-pool performance (gitlab-runner) (WIP currently creating a builder-pool with localssd drives for projects with 6 or more developers)
-- Cluster scaling up and down impacts API server availability resulting in Gitlab losing communication with the runner. GKE like AWS "automatically configures the proper VM size for your master depending on the number of nodes in your cluster" See [Size of master and master components](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components)
-- Ingress size of response (added annotation resolved this)
-- Upgrading cert-manager exposed a bug in nginx ingress that resulted in all our projects reverting to self-signed ssl certs. (Upgraded nginx resolved issue)
+- Cluster scaling up and down impacts API server availability resulting in Gitlab losing communication with the runner. Cause: GKE like AWS "automatically configures the proper VM size for your master depending on the number of nodes in your cluster" See [Size of master and master components](https://kubernetes.io/docs/setup/best-practices/cluster-large/#size-of-master-and-master-components) Solution: Disabled autoscaling for now.
+- Ingress size of response (added annotation to resolved this)
+- Upgrading cert-manager exposed a bug in nginx ingress that resulted in all our projects reverting to self-signed ssl certs. (Upgraded ingress nginx resolved issue)
 - Allowing project tech leads to manage project namespace without another rolebinding. They need to be able to delete pods if they're in a regressed state. (WIP)
 
 
