@@ -23,16 +23,18 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 ## Actions
 
 
-- Created a cluster, deployed the needed components, connect the cluster to a Gitlab project and ran a project from the environment. This cluster had two node-pools builder and worker.
-- Training and Professional development.
-- Created Migration plan
-- Invited other projects that wanted to help us better understand the requirements needed to run the cluster.
+- Team created a cluster, deployed the needed components, connect the cluster to a Gitlab project and ran a project from the environment. This cluster had two node-pools builder and worker. RBAC Manager (per user)
+- Training and Professional development. ([CKAD](certs/))
+- Reviewed Knative serving considering scale-to-zero for resource management
+- Team created migration plan
+- Team invited other projects that wanted to help us better understand the requirements needed to run the cluster.
 - Team member created starter project containing a Helm chart for the workloads
-- Define labels for namespaces and workloads
+- Defined labels for namespaces (RBAC-Manager
 - Created new cluster that would become the "production" one used for all projects. Requirements: RBAC with integration with Google Groups, network policies
-- Deployed RBAC-Manager to manage RBAC Rolebindings
+- Deployed RBAC-Manager to manage RBAC Rolebindings (per google group)
+- Team member created an external IP for the ingress controller
 - Deployed Ingress Nginx to manage incoming traffic into the cluster
-- Discovered required annontations for certmanager and proxy-authication
+- Team discovered required annontations for certmanager and proxy-authentication
 - Deployed Prometheus & Grafana for observability (this was done via the GCP Console)
 - Deployed WeaveScope for observability
 - Migrated projects off POC cluster to new cluster and deleted it.
