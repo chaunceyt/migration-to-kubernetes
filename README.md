@@ -1,8 +1,11 @@
 # Notes
 
-I'm on a team responsible for migrating to a new CI environment. I treating my notes as a JIRA ticket storing them here.
+I'm on a team responsible for migrating to a new CI environment. My role on this team is "Lead cluster administrator" being responsible for the installation and setup of the final production environment and day to day management of the environment. My current title within the company is Software Architect.
+
+I treating my notes as a JIRA ticket created and assigned to me.
 
 # Issue
+**Subject:** Perform migration to Kubernetes
 
 We have a number of OpenStack VMs allocated to CI for our projects. Each project has a Jenkins container that manages a develop, qa and review environment for the project. Each of the stated environments have multiple containers running.
 
@@ -36,9 +39,10 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 - Team created a cluster, deployed the needed components, connect the cluster to a Gitlab project and ran a project from the environment. This cluster had two node-pools builder and worker. RBAC Manager (per user)
 - Training and Professional development. ([CKAD](certs/))
 - Reviewed Knative serving considering scale-to-zero for resource management
-- Reviewed Network Policies. GKE uses Tigera's [Calico](https://www.projectcalico.org/)
+- Reviewed Network Policies. GKE uses Tigera's [Calico](https://www.projectcalico.org/) [Demos](https://docs.projectcalico.org/v3.11/security/tutorials/kubernetes-policy-demo/kubernetes-demo)
 - Reviewed [Velero](https://velero.io/) for DR and as migration tool. Allowing us to migrate to other cloud providers Kubernetes offering with little effort if we needed to.
 - Reviewed SysDig Monitoring and watched their youtube playlist [here](https://www.youtube.com/playlist?list=PLrUjPk-W0lae7KuCFvmdbWj9Powm7Ryu0). (currently using in production)
+- Reviewed Horizonal Pod Autoscaler ([HPA](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/))
 - Team created migration plan
 - Team invited other projects that wanted to help us better understand the requirements needed to run the cluster.
 - Team member created starter project containing a Helm chart for the workloads
@@ -50,6 +54,7 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 - Team discovered required annontations for certmanager and proxy-authentication
 - Deployed [Prometheus & Grafana](docs/PROMETHEUS-GRAFANA.md) for observability (this was done via the GCP Console)
 - Deployed [WeaveScope](docs/WEAVESCOPE.md) for observability
+- Created helm chart to provision project's namespace
 - Migrated projects off POC cluster to new cluster and deleted it.
 - Use `stern` for log tailing since it monitors all of the containers in a pod
 - Use `octant` as a graphical debugging tool
