@@ -47,7 +47,7 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 - Team invited other projects that wanted to help us better understand the requirements needed to run the cluster.
 - Team member created starter project containing a Helm chart for the workloads
 - Defined labels for namespaces (RBAC-Manager requirement)
-- Created new cluster that would become the "production" one used for all projects. Requirements: RBAC with integration with Google Groups, network policies
+- Created [new cluster](docs/GKE-SETUP.md) that would become the "production" one used for all projects. Requirements: RBAC with integration with Google Groups, network policies
 - Deployed [RBAC-Manager](docs/RBAC-MANAGER.md) to manage RBAC Rolebindings (per google group)
 - Team member created an external IP for the ingress controller
 - Deployed [Ingress Nginx](docs/INGRESS-NGINX.md) to manage incoming traffic into the cluster
