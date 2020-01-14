@@ -78,3 +78,16 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 3. A project should should have a domain per environment. i.e. `develop|qa|review.kube.domain.tld`
 4. Each project should have an **Apache**, **Caching** and **Database** container by default.
 5. Tech leads should be able to troubleshoot their project environments
+
+## Proof of Concept
+
+Re: Confirmation #2 "a process triggers the creation of a web environment..."
+
+I started working a commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl).
+
+Things missing
+
+- ConfigMap for environmental variables
+- Solr Search option
+- ElasticSearch option
+- Sidecar support
