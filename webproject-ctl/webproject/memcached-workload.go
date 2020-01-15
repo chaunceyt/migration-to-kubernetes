@@ -33,10 +33,7 @@ import (
 
 func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	memcachedDeployment := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
-			APIVersion: appsv1.SchemeGroupVersion.String(),
-		},
+		TypeMeta: genTypeMeta("Deployment"),
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      deploymentInput.DeploymentName + "-memcached",
 			Namespace: deploymentInput.Namespace,
@@ -92,19 +89,16 @@ func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 	}
 
 	serviceName := deploymentInput.DeploymentName + "-memcached-svc"
-	labels := map[string]string{
+	memcachedServiceLabels := map[string]string{
 		"app": deploymentInput.DeploymentName + "-memcached",
 	}
 	service := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: serviceName,
-			Labels: map[string]string{
-				"app":     deploymentInput.DeploymentName,
-				"release": deploymentInput.DeploymentName,
-			},
+			Name:   serviceName,
+			Labels: genDefaultLabels(deploymentInput),
 		},
 		Spec: v1.ServiceSpec{
-			Selector: labels,
+			Selector: memcachedServiceLabels,
 			Ports: []v1.ServicePort{{
 				Port:       11211,
 				TargetPort: intstr.FromInt(11211),

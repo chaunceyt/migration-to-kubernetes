@@ -37,11 +37,8 @@ func createPersistentVolumeClaim(pvcType string, client *kubernetes.Clientset, d
 			APIVersion: corev1.SchemeGroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name: deploymentInput.DeploymentName + "-" + pvcType + "-pvc",
-			Labels: map[string]string{
-				"app":     deploymentInput.DeploymentName,
-				"release": deploymentInput.DeploymentName,
-			},
+			Name:   deploymentInput.DeploymentName + "-" + pvcType + "-pvc",
+			Labels: genDefaultLabels(deploymentInput),
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
 			AccessModes: []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce},

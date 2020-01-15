@@ -34,33 +34,21 @@ import (
 func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	// WebProject Deployment.
 	deployment := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
-			APIVersion: appsv1.SchemeGroupVersion.String(),
-		},
+		TypeMeta: genTypeMeta("Deployment"),
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      deploymentInput.DeploymentName,
 			Namespace: deploymentInput.Namespace,
-			Labels: map[string]string{
-				"app":     deploymentInput.DeploymentName,
-				"release": deploymentInput.DeploymentName,
-			},
+			Labels:    genDefaultLabels(deploymentInput),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Replicas: int32ptr(deploymentInput.Replicas),
 			Selector: &metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"app":     deploymentInput.DeploymentName,
-					"release": deploymentInput.DeploymentName,
-				},
+				MatchLabels: genDefaultLabels(deploymentInput),
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: deploymentInput.DeploymentName,
-					Labels: map[string]string{
-						"app":     deploymentInput.DeploymentName,
-						"release": deploymentInput.DeploymentName,
-					},
+					Name:   deploymentInput.DeploymentName,
+					Labels: genDefaultLabels(deploymentInput),
 				},
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
@@ -115,16 +103,13 @@ func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	}
 	webprojectService := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: serviceName,
-			Labels: map[string]string{
-				"app":     deploymentInput.DeploymentName,
-				"release": deploymentInput.DeploymentName,
-			},
+			Name:   serviceName,
+			Labels: genDefaultLabels(deploymentInput),
 		},
 		Spec: v1.ServiceSpec{
 			Selector: webprojectLabels,
 			Ports: []v1.ServicePort{{
-				Port:       80,
+				Port:       8080,
 				Protocol:   "TCP",
 				TargetPort: intstr.FromInt(deploymentInput.PrimaryContainerPort),
 			}},

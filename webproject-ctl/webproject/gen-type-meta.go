@@ -23,45 +23,25 @@ package main
 import (
 	"fmt"
 
-	"k8s.io/client-go/kubernetes"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// createWebProject - create all of the desire components.
-func createWebProject(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
+func genTypeMeta(kind string) metav1.TypeMeta {
+	var apiVersion string
 
-	// Create Persistent Volume claims first.
-	createPersistentVolumeClaim("webfiles", client, deploymentInput)
-
-	// Determine if we are needing to deploy a database.
-	var useDatabase bool
-
-	if deploymentInput.DatabaseEngine == "" || deploymentInput.DatabaseEngineImage == "" {
-		useDatabase = false
-	} else {
-		useDatabase = true
-	}
-
-	// Create database workload.
-	if useDatabase == true {
-		createPersistentVolumeClaim("db", client, deploymentInput)
-		createDatabaseWorkload(client, deploymentInput)
-	}
-
-	// Create cacheEngine.
-	switch deploymentInput.CacheEngine {
-	case "redis":
-		createRedisWorkload(client, deploymentInput)
-	case "memcached":
-		createMemcachedWorkload(client, deploymentInput)
+	switch kind {
+	case "Deployment":
+		apiVersion = appsv1.SchemeGroupVersion.String()
+	case "PersistentVolumeClaim":
+		apiVersion = corev1.SchemeGroupVersion.String()
 	default:
-		fmt.Println("Unsupported CacheEngine selected or not defined")
-
+		fmt.Println("Unsupported option.")
 	}
 
-	// Create project's primary workload.
-	createWebprojectWorkload(client, deploymentInput)
-
-	// Setup domain(s) for Webproject
-	createIngress(client, deploymentInput)
-
+	return metav1.TypeMeta{
+		APIVersion: apiVersion,
+		Kind:       kind,
+	}
 }

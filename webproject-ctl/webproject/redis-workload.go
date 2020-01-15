@@ -33,10 +33,7 @@ import (
 
 func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	redisDeployment := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
-			APIVersion: appsv1.SchemeGroupVersion.String(),
-		},
+		TypeMeta: genTypeMeta("Deployment"),
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      deploymentInput.DeploymentName + "-redis",
 			Namespace: deploymentInput.Namespace,
@@ -87,19 +84,16 @@ func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 	log.Printf("Created Redis Deployment - Name: %q, UID: %q\n", result.GetObjectMeta().GetName(), result.GetObjectMeta().GetUID())
 
 	serviceName := deploymentInput.DeploymentName + "-redis-svc"
-	redisLabels := map[string]string{
+	redisSelectorLabels := map[string]string{
 		"app": deploymentInput.DeploymentName + "-redis",
 	}
 	service := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: serviceName,
-			Labels: map[string]string{
-				"app":     deploymentInput.DeploymentName,
-				"release": deploymentInput.DeploymentName,
-			},
+			Name:   serviceName,
+			Labels: genDefaultLabels(deploymentInput),
 		},
 		Spec: v1.ServiceSpec{
-			Selector: redisLabels,
+			Selector: redisSelectorLabels,
 			Ports: []v1.ServicePort{{
 				Port:       6379,
 				TargetPort: intstr.FromInt(6379),

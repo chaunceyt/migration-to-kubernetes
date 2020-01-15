@@ -33,10 +33,7 @@ import (
 
 func createDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	databaseDeployment := &appsv1.Deployment{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Deployment",
-			APIVersion: appsv1.SchemeGroupVersion.String(),
-		},
+		TypeMeta: genTypeMeta("Deployment"),
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      deploymentInput.DeploymentName + "-db",
 			Namespace: deploymentInput.Namespace,
@@ -69,6 +66,9 @@ func createDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebPro
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Env: []v1.EnvVar{
 								{Name: "MYSQL_ROOT_PASSWORD", Value: "admin"},
+								{Name: "MYSQL_DATABASE", Value: "drupal_database"},
+								{Name: "MYSQL_USER", Value: "admin"},
+								{Name: "MYSQL_PASSWORD", Value: "admin"},
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								createVolumeMount("database-volume", "/var/lib/mysql"),
@@ -106,6 +106,8 @@ func createDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebPro
 	databaseLabels := map[string]string{
 		"app": deploymentInput.DeploymentName + "-db",
 	}
+
+	// Database service.
 	databaseService := &v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: databaseServiceName,
