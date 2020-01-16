@@ -37,7 +37,7 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 
 
 - Team created a cluster, deployed the needed components, connect the cluster to a Gitlab project and ran a project from the environment. This cluster had two node-pools builder and worker. RBAC Manager (per user)
-- [Training](docs/TRAINING-PROFDEV.md) and Professional development. ([CKAD](certs/))
+- [Training](docs/TRAINING-PROFDEV.md) and Professional development. ([CKA/CKAD](certs/))
 - Reviewed Knative serving considering scale-to-zero for resource management
 - Reviewed Network Policies. GKE uses Tigera's [Calico](https://www.projectcalico.org/) [Demos](https://docs.projectcalico.org/v3.11/security/tutorials/kubernetes-policy-demo/kubernetes-demo)
 - Reviewed [Velero](https://velero.io/) for DR and as migration tool. Allowing us to migrate to other cloud providers Kubernetes offering with little effort if we needed to.
