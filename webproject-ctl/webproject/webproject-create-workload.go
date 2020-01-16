@@ -109,7 +109,7 @@ func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 		Spec: v1.ServiceSpec{
 			Selector: webprojectLabels,
 			Ports: []v1.ServicePort{{
-				Port:       8080,
+				Port:       int32(deploymentInput.PrimaryContainerPort),
 				Protocol:   "TCP",
 				TargetPort: intstr.FromInt(deploymentInput.PrimaryContainerPort),
 			}},

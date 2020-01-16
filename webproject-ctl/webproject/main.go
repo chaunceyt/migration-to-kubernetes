@@ -26,6 +26,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 	"path/filepath"
 
 	"k8s.io/client-go/kubernetes"
@@ -47,7 +49,27 @@ type WebProjectInput struct {
 	IngressDomainName        string
 }
 
+var usage = `Usage: webproject-ctl [options...]
+
+Options:
+  -cache-engine                 Cache Engine [memcached, redis].
+  -database-engine              DatabaseEngine [mysql or mariadb].
+  -database-engine-image        Database image name and tag. i.e. mysql:5.7
+  -deployment-name              The Deployment name. (required)
+                                If using GitLab consider using the RELEASE_NAME
+  -domain-name                  Project ingress domain name. (required)
+  -namespace                    Project namespace. (required)
+  -primary-container-name       Primary Container name. Default "web"
+  -prinary-container-image-tag  Project Container image and tag. (required)
+  -primary-container-port       Primary container port. Default 8080.
+  -replicas                     Number of replicas. Default 1.
+`
+
 func main() {
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, fmt.Sprintf(usage))
+	}
+
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
@@ -55,18 +77,33 @@ func main() {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 
-	deploymentName := flag.String("deployment-name", "", "Webproject Name")
-	primaryContainerName := flag.String("primary-container-name", "", "Primary Container name")
-	primaryContainerImageTag := flag.String("prinary-container-image-tag", "", "Primary Container image and tag")
-	primaryContainerPort := flag.Int("primary-container-port", 8080, "Primary container port")
-	replicas := flag.Int("replicas", 1, "Number of replicas")
-	ingressDomainName := flag.String("domain-name", "", "Domainname for workload")
-	projectNamespace := flag.String("namespace", "", "Project Namespace")
-	cacheEngine := flag.String("cache-engine", "", "CacheEngine [memcached or redis]")
-	databaseEngine := flag.String("database-engine", "", "DatabaseEngine [mysql or mariadb]")
-	databaseEngineImage := flag.String("database-engine-image", "", "Image name and tag")
+	deploymentName := flag.String("deployment-name", "", "")
+	primaryContainerName := flag.String("primary-container-name", "web", "")
+	primaryContainerImageTag := flag.String("primary-container-image-tag", "", "")
+	primaryContainerPort := flag.Int("primary-container-port", 8080, "")
+	// Sidercar support
+	// sidecarContainerName := flag.String("sidecar-container-name", "cli", "")
+	// sidecarContainerImageTag := flag.String("sidecar-container-image-tag", "", "")
+	// sidecarContainerPort := flag.Int("sidecar-container-port", 8080, "")
+	replicas := flag.Int("replicas", 1, "")
+	ingressDomainName := flag.String("domain-name", "", "")
+	projectNamespace := flag.String("namespace", "", "")
+	cacheEngine := flag.String("cache-engine", "", "")
+	// Container image and tag i.e. redis:5.0.7-alpine or memcached:1.5.20-alpine
+	// cacheEngineImage := flag.String("cache-engine-image", "", "")
+	databaseEngine := flag.String("database-engine", "", "")
+	databaseEngineImage := flag.String("database-engine-image", "", "")
+	// Path to DOCROOT i.e. /var/www/html
+	// webrootMountPoint := flag.String("webroot-mount-point", "", "")
+
+	// Path to files folder. i.e. /var/www/html/sites/default/files
+	// filesMountPoint := flag.String("files-mount-point", "", "")
 
 	flag.Parse()
+	// We currently have 6 required parameters.
+	if flag.NFlag() < 6 {
+		usageAndExit("")
+	}
 
 	deploymentInput := WebProjectInput{
 		DeploymentName:           *deploymentName,
@@ -99,4 +136,14 @@ func main() {
 
 func int32ptr(i int32) *int32 {
 	return &i
+}
+
+func usageAndExit(msg string) {
+	if msg != "" {
+		fmt.Fprintf(os.Stderr, msg)
+		fmt.Fprintf(os.Stderr, "\n\n")
+	}
+	flag.Usage()
+	fmt.Fprintf(os.Stderr, "\n")
+	os.Exit(1)
 }
