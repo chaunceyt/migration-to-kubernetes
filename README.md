@@ -1,8 +1,8 @@
 # Notes
 
-I'm on a team responsible for migrating to a new CI environment. My role on this team is "Lead cluster administrator" being responsible for the installation and setup of the final production environment and day to day management of the environment. My current title within the company is Software Architect.
+I'm on a team responsible for migrating to a new CI environment. My role on this team is "lead cluster administrator" being responsible for the installation and setup of the final production environment and day to day management of the environment. My current title within the company is "Software Architect".
 
-I treating my notes as a JIRA ticket created and assigned to me.
+I am treating my notes as a JIRA ticket created and assigned to me.
 
 # Issue
 **Subject:** Perform migration to Kubernetes
@@ -88,6 +88,5 @@ I started working a commandline tool that creates many of the services listed ab
 Things missing
 
 - ConfigMap for environmental variables
-- Solr Search option
 - ElasticSearch option
-- Sidecar support
+- Delete workload (WIP)
