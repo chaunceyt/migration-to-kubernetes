@@ -55,13 +55,25 @@ func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 						{
 							Name:            deploymentInput.PrimaryContainerName,
 							Image:           deploymentInput.PrimaryContainerImageTag,
-							ImagePullPolicy: corev1.PullIfNotPresent,
+							ImagePullPolicy: corev1.PullAlways,
 							VolumeMounts: []corev1.VolumeMount{
-								createVolumeMount("webroot", "/var/www/webroot"),
-								createVolumeMount("files", "/var/www/html/sites/default/files"),
+								createVolumeMount("webroot", deploymentInput.WebrootMountPoint),
+								createVolumeMount("files", deploymentInput.FilesMountPoint),
 							},
 							Ports: []corev1.ContainerPort{
 								createContainerPort(int32(deploymentInput.PrimaryContainerPort)),
+							},
+						},
+						{
+							Name:            deploymentInput.SidecarContainerName,
+							Image:           deploymentInput.SidecarContainerImageTag,
+							ImagePullPolicy: corev1.PullAlways,
+							VolumeMounts: []corev1.VolumeMount{
+								createVolumeMount("webroot", deploymentInput.WebrootMountPoint),
+								createVolumeMount("files", deploymentInput.FilesMountPoint),
+							},
+							Ports: []corev1.ContainerPort{
+								createContainerPort(int32(deploymentInput.SidecarContainerPort)),
 							},
 						},
 					},

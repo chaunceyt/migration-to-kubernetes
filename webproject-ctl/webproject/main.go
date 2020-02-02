@@ -37,32 +37,47 @@ import (
 
 // WebProjectInput struct.
 type WebProjectInput struct {
+	CacheEngine              string
+	CacheEngineImage         string
+	DatabaseEngine           string
+	DatabaseEngineImage      string
+	DeleteProject            bool
 	DeploymentName           string
+	FilesMountPoint          string
+	IngressDomainName        string
+	Namespace                string
 	PrimaryContainerName     string
 	PrimaryContainerImageTag string
 	PrimaryContainerPort     int
 	Replicas                 int32
-	Namespace                string
-	CacheEngine              string
-	DatabaseEngine           string
-	DatabaseEngineImage      string
-	IngressDomainName        string
+	SearchEngine             string
+	SearchEngineImage        string
+	SidecarContainerName     string
+	SidecarContainerImageTag string
+	SidecarContainerPort     int
+	WebrootMountPoint        string
 }
 
 var usage = `Usage: webproject-ctl [options...]
 
 Options:
   -cache-engine                 Cache Engine [memcached, redis].
+  -cache-engine-image           Cache Engine Image [memcached:1.5.20, redis:5.0.7-alpine].
   -database-engine              DatabaseEngine [mysql or mariadb].
   -database-engine-image        Database image name and tag. i.e. mysql:5.7
   -deployment-name              The Deployment name. (required)
                                 If using GitLab consider using the RELEASE_NAME
   -domain-name                  Project ingress domain name. (required)
+  -files-mount-point            Site files mount point. Default: /var/www/html/sites/default/files
   -namespace                    Project namespace. (required)
-  -primary-container-name       Primary Container name. Default "web"
+  -primary-container-name       Primary Container name. Default: "web"
   -prinary-container-image-tag  Project Container image and tag. (required)
-  -primary-container-port       Primary container port. Default 8080.
+  -primary-container-port       Primary container port. Default: 8080.
   -replicas                     Number of replicas. Default 1.
+  -sidecar-container-name       Sidecar Container name. Default: "cli"
+  -sidecar-container-image-tag  Sidecar Container image and tag. Default: docksal/cli:2.10-php7.3 
+  -sidecar-container-port       Sidecar container port.
+  -webroot-mount-point          Webroot mount point. Default: /var/www/html
 `
 
 func main() {
@@ -77,36 +92,65 @@ func main() {
 		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 
-	deploymentName := flag.String("deployment-name", "", "")
+	deploymentName := flag.String("deployment-name", "", "The Deployment name. (required)")
+
+	// Delete a project
+	deleteProject := flag.Bool("delete-web-project", false, "Delete WebProject")
+
+	// Create a project
+	cacheEngine := flag.String("cache-engine", "", "")
+	cacheEngineImage := flag.String("cache-engine-image", "", "")
+	databaseEngine := flag.String("database-engine", "", "")
+	databaseEngineImage := flag.String("database-engine-image", "", "")
+
+	// Path to files folder. i.e. /var/www/html/sites/default/files
+	filesMountPoint := flag.String("files-mount-point", "/var/www/html/sites/default/files", "")
+
+	ingressDomainName := flag.String("domain-name", "", "")
+
 	primaryContainerName := flag.String("primary-container-name", "web", "")
 	primaryContainerImageTag := flag.String("primary-container-image-tag", "", "")
 	primaryContainerPort := flag.Int("primary-container-port", 8080, "")
-	// Sidercar support
-	// sidecarContainerName := flag.String("sidecar-container-name", "cli", "")
-	// sidecarContainerImageTag := flag.String("sidecar-container-image-tag", "", "")
-	// sidecarContainerPort := flag.Int("sidecar-container-port", 8080, "")
-	replicas := flag.Int("replicas", 1, "")
-	ingressDomainName := flag.String("domain-name", "", "")
 	projectNamespace := flag.String("namespace", "", "")
-	cacheEngine := flag.String("cache-engine", "", "")
-	// Container image and tag i.e. redis:5.0.7-alpine or memcached:1.5.20-alpine
-	// cacheEngineImage := flag.String("cache-engine-image", "", "")
-	databaseEngine := flag.String("database-engine", "", "")
-	databaseEngineImage := flag.String("database-engine-image", "", "")
-	// Path to DOCROOT i.e. /var/www/html
-	// webrootMountPoint := flag.String("webroot-mount-point", "", "")
 
-	// Path to files folder. i.e. /var/www/html/sites/default/files
-	// filesMountPoint := flag.String("files-mount-point", "", "")
+	replicas := flag.Int("replicas", 1, "")
+
+	// SearchEngine [solr, elasticsearch]
+	searchEngine := flag.String("search-engine", "", "")
+	searchEngineImage := flag.String("search-engine-image", "", "")
+
+	// Sidercar support
+	sidecarContainerName := flag.String("sidecar-container-name", "cli", "")
+	sidecarContainerImageTag := flag.String("sidecar-container-image-tag", "docksal/cli:2.10-php7.3", "")
+	sidecarContainerPort := flag.Int("sidecar-container-port", 9000, "")
+
+	// Path to DOCROOT i.e. /var/www/html
+	webrootMountPoint := flag.String("webroot-mount-point", "/var/www/html", "")
 
 	flag.Parse()
-	// We currently have 6 required parameters.
-	if flag.NFlag() < 6 {
-		usageAndExit("")
+
+	var requiredParameters int
+
+	if *deleteProject {
+		requiredParameters = 2
+		if flag.NFlag() < requiredParameters {
+			fmt.Println("Deleting a project requires the namespace and deploymentname")
+		}
+	} else {
+		// Ensure we get the required parameters.
+		requiredParameters := 3
+		if flag.NFlag() < requiredParameters {
+			usageAndExit("")
+		}
+
 	}
 
+	// TODO: If database-engine isset the database-engine-image can not be empty
+
 	deploymentInput := WebProjectInput{
+		DeleteProject:            *deleteProject,
 		DeploymentName:           *deploymentName,
+		FilesMountPoint:          *filesMountPoint,
 		PrimaryContainerName:     *primaryContainerName,
 		PrimaryContainerImageTag: *primaryContainerImageTag,
 		PrimaryContainerPort:     *primaryContainerPort,
@@ -114,24 +158,32 @@ func main() {
 		IngressDomainName:        *ingressDomainName,
 		Namespace:                *projectNamespace,
 		CacheEngine:              *cacheEngine,
+		CacheEngineImage:         *cacheEngineImage,
 		DatabaseEngine:           *databaseEngine,
 		DatabaseEngineImage:      *databaseEngineImage,
+		SearchEngine:             *searchEngine,
+		SearchEngineImage:        *searchEngineImage,
+		SidecarContainerName:     *sidecarContainerName,
+		SidecarContainerImageTag: *sidecarContainerImageTag,
+		SidecarContainerPort:     *sidecarContainerPort,
+		WebrootMountPoint:        *webrootMountPoint,
 	}
-
-	//	flag.Parse()
 
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
-		panic(err)
+		errAndExit("Error getting kubeconfig")
 	}
 
-	//client, err := dynamic.NewForConfig(config)
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		panic(err)
+		errAndExit("Error creating client from config provided")
 	}
 
-	createWebProject(client, deploymentInput)
+	if *deleteProject {
+		deleteWebprojectWorkloadHandler(client, deploymentInput)
+	} else {
+		createWebProject(client, deploymentInput)
+	}
 }
 
 func int32ptr(i int32) *int32 {
@@ -144,6 +196,12 @@ func usageAndExit(msg string) {
 		fmt.Fprintf(os.Stderr, "\n\n")
 	}
 	flag.Usage()
+	fmt.Fprintf(os.Stderr, "\n")
+	os.Exit(1)
+}
+
+func errAndExit(msg string) {
+	fmt.Fprintf(os.Stderr, msg)
 	fmt.Fprintf(os.Stderr, "\n")
 	os.Exit(1)
 }

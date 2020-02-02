@@ -58,6 +58,14 @@ func createWebProject(client *kubernetes.Clientset, deploymentInput WebProjectIn
 
 	}
 
+	// Create searchEngine.
+	switch deploymentInput.SearchEngine {
+	case "solr":
+		createSolrWorkload(client, deploymentInput)
+	default:
+		fmt.Println("Unsupported SearchEngine selected or not defined")
+
+	}
 	// Create project's primary workload.
 	createWebprojectWorkload(client, deploymentInput)
 

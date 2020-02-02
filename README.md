@@ -1,6 +1,6 @@
 # Notes
 
-I'm on a team responsible for migrating to a new CI environment. My role on this team is "lead cluster administrator" being responsible for the installation and setup of the final production environment and day to day management of the environment. My current title within the company is "Software Architect".
+I am on a team responsible for migrating to a new CI environment. My role on this team is "lead cluster administrator" being responsible for the installation and setup of the final production environment and day to day management of the environment. My current title within the company is "Software Architect".
 
 I am treating my notes as a JIRA ticket created and assigned to me.
 
@@ -83,7 +83,7 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 
 Re: Confirmation #2 "a process triggers the creation of a web environment..."
 
-I started working a commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl).
+I started working a commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl). I don't envision using this tool for production. The primary purpose of this particular effort it learning to use go for ops tools.
 
 Things missing
 

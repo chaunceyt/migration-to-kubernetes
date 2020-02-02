@@ -24,3 +24,9 @@ Training
 - [Certified Kubernetes Administrator (CKA)](https://linuxacademy.com/containers/training/course/name/certified-kubernetes-administrator-preparation-course)
 - [Docker Certified Associate Prep Course](https://linuxacademy.com/containers/training/course/name/docker-certified-associate-prep-course)
 - [Kube Academy](https://kube.academy/courses)
+
+Video(s)
+
+- [Kubernetes YT Channel](https://www.youtube.com/channel/UCZ2bu0qutTOM0tHYa_jkIwg/videos)
+- [TGI Kubernetes](https://www.youtube.com/playlist?list=PL7bmigfV0EqQzxcNpmcdTJ9eFRPBe-iZa)
+- [TGIK: Grokking Kubernetes](https://www.youtube.com/playlist?list=PL7bmigfV0EqS6WxgWlH-p4dhkfuwcZ6-E)
