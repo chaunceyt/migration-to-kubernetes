@@ -37,11 +37,17 @@ func deleteWebprojectWorkloadHandler(client *kubernetes.Clientset, deploymentInp
 	 * Consider using the Gitlab RELEASE_NAME for the release value
 	 */
 
-	// Delete cache
+	// Delete cache workload.
 	deleteRedisWorkload(client, deploymentInput)
 	deleteMemcachedWorkload(client, deploymentInput)
+
+	// Delete search workload.
 	deleteSolrWorkload(client, deploymentInput)
+
+	// Delete Web project workload.
 	deleteWebProjectWorkload(client, deploymentInput)
+
+	// Delete Database workload.
 	deleteDatabaseWorkload(client, deploymentInput)
 
 }
@@ -173,7 +179,7 @@ func deleteDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebPro
 	if foundServiceErr != nil {
 		log.Println("The Database Service " + deploymentInput.DeploymentName + "-db-svc does not exist. Nothing to delete.")
 	} else {
-		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-redis-svc", &metav1.DeleteOptions{}); serviceErr != nil {
+		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-db-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Database Service " + deploymentInput.DeploymentName + "-db-svc")
 		}
 	}

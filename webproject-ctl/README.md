@@ -1,6 +1,6 @@
 # Webproject Control
 
-As I continue to teach myself Golang. This hack session I decided to that [simple API endpoint](webproject-api-using-gin) and make it a cli tool.
+As I continue to teach myself Golang. This hack session I decided to that the [simple API endpoint](webproject-api-using-gin) and make it a cli tool.
 
 Initial start was to move to flags. Later I plan to move to "github.com/urfave/cli" later.
 
