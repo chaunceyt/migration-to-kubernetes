@@ -29,6 +29,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createIngress - create an ingress object for the web project serivce.
+// TODO: add annotations for ingress controllers. nginx + proxy auth
 func createIngress(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	ingress := &v1beta1.Ingress{
 		ObjectMeta: metav1.ObjectMeta{

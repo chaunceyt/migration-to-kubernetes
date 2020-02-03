@@ -31,6 +31,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createMemcachedWorkload - create a memcached deployment and service.
 func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	memcachedDeployment := &appsv1.Deployment{
 		TypeMeta: genTypeMeta("Deployment"),

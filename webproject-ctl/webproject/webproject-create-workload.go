@@ -31,6 +31,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createWebprojectWorkload - create web project deployment and service.
+// An ingress and pvc are also created.
 func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	// WebProject Deployment.
 	deployment := &appsv1.Deployment{

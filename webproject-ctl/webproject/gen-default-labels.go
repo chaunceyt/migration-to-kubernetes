@@ -20,6 +20,7 @@
 
 package main
 
+// genDefaultLabels - generate the labels for the various api objects.
 func genDefaultLabels(deploymentInput WebProjectInput) map[string]string {
 	return map[string]string{
 		"app":     deploymentInput.DeploymentName,

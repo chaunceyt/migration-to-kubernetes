@@ -28,6 +28,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// deleteWebprojectWorkloadHandler - delete all of the objects related to a specific deployment name.
 func deleteWebprojectWorkloadHandler(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 
 	fmt.Println("Delete Webproject Workload")
@@ -52,6 +53,7 @@ func deleteWebprojectWorkloadHandler(client *kubernetes.Clientset, deploymentInp
 
 }
 
+// deletePVC - delete persistent volume claim.
 func deletePVC(client *kubernetes.Clientset, deploymentInput WebProjectInput, pvcType string) {
 	// Delete PVC based on pvcType db and webfiles
 	_, foundErr := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-"+pvcType+"-pvc", metav1.GetOptions{})
@@ -59,13 +61,14 @@ func deletePVC(client *kubernetes.Clientset, deploymentInput WebProjectInput, pv
 		log.Println("The Persistent Volume Claim " + deploymentInput.DeploymentName + "-" + pvcType + "-pvc does not exist. Nothing to delete.")
 	} else {
 		if err := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-"+pvcType+"-pvc", &metav1.DeleteOptions{}); err != nil {
-			log.Println(fmt.Errorf("Error while deleting PVC - %v\n", err))
+			log.Println(fmt.Errorf("Error while deleting PVC - %v", err))
 		}
 		log.Println("Deleted PVC " + deploymentInput.DeploymentName + "-" + pvcType + "-pvc")
 
 	}
 }
 
+// deleteRedisWorload - delete service and deployment.
 func deleteRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	// Delete redis serivce
 
@@ -84,13 +87,14 @@ func deleteRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 		log.Println("The Redis Deployment" + deploymentInput.DeploymentName + "-redis does not exist. Nothing to delete.")
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-redis", &metav1.DeleteOptions{}); err != nil {
-			log.Println(fmt.Errorf("Error while Redis Deployment - %v\n", err))
+			log.Println(fmt.Errorf("Error while Redis Deployment - %v", err))
 		}
 		log.Println("Deleted Redis Deployment " + deploymentInput.DeploymentName + "-redis")
 
 	}
 }
 
+// deleteMemcachedWorkload - delete service and deployment.
 func deleteMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 
 	// Delete Memcached service.
@@ -109,12 +113,13 @@ func deleteMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 		log.Println("The Memcached Deployment" + deploymentInput.DeploymentName + "-memcached does not exist. Nothing to delete.")
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-memcached", &metav1.DeleteOptions{}); err != nil {
-			log.Println(fmt.Errorf("Error while Memcache Deployment - %v\n", err))
+			log.Println(fmt.Errorf("Error while Memcache Deployment - %v", err))
 		}
 		log.Println("Deleted Memcached Deployment " + deploymentInput.DeploymentName + "-memcached")
 	}
 }
 
+// deleteSolrWorkload - delete service and deployment.
 func deleteSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 
 	// Delete Solr service.
@@ -131,12 +136,13 @@ func deleteSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProject
 		log.Println("The Solr Deployment" + deploymentInput.DeploymentName + "-solr does not exist. Nothing to delete.")
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-solr", &metav1.DeleteOptions{}); err != nil {
-			log.Println(fmt.Errorf("Error while deleting Solr Deployment - %v\n", err))
+			log.Println(fmt.Errorf("Error while deleting Solr Deployment - %v", err))
 		}
 		log.Println("Deleted Solr Deployment " + deploymentInput.DeploymentName + "-solr")
 	}
 }
 
+// deleteWebProjectWorkload - delete ingress, service deployment and pvc.
 func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	// Delete ingress
 	_, foundIngressErr := client.ExtensionsV1beta1().Ingresses(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-ing", metav1.GetOptions{})
@@ -144,7 +150,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 
 	} else {
 		if ingressErr := client.ExtensionsV1beta1().Ingresses(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-ing", &metav1.DeleteOptions{}); ingressErr != nil {
-			log.Println(fmt.Errorf("Error while Deleting Ingress - %v\n", ingressErr))
+			log.Println(fmt.Errorf("Error while Deleting Ingress - %v", ingressErr))
 		}
 	}
 
@@ -163,7 +169,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 		log.Println("The Web project Deployment" + deploymentInput.DeploymentName + " does not exist. Nothing to delete.")
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName, &metav1.DeleteOptions{}); err != nil {
-			log.Println(fmt.Errorf("Error while deleting WebProject Deployment - %v\n", err))
+			log.Println(fmt.Errorf("Error while deleting WebProject Deployment - %v", err))
 		}
 		log.Println("Deleted WebProject Deployment " + deploymentInput.DeploymentName)
 	}
@@ -172,6 +178,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	deletePVC(client, deploymentInput, "webfiles")
 }
 
+// deleteDatabaseWorkload - delete service, deployment and pvc.
 func deleteDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 
 	// Delete database service
@@ -186,7 +193,7 @@ func deleteDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebPro
 
 	// Delete database deployment
 	if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-db", &metav1.DeleteOptions{}); err != nil {
-		log.Println(fmt.Errorf("Error while deleting PVC - %v\n", err))
+		log.Println(fmt.Errorf("Error while deleting PVC - %v", err))
 	}
 	log.Println("Deleted Database Deployment" + deploymentInput.DeploymentName + "-db")
 

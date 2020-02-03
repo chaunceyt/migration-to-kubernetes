@@ -31,6 +31,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createRedisWorkload - create Redis deployment and service.
 func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	redisDeployment := &appsv1.Deployment{
 		TypeMeta: genTypeMeta("Deployment"),

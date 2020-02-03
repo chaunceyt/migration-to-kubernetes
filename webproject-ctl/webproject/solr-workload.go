@@ -31,6 +31,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createSolrWorkload - create Solr deployment and service.
 func createSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	solrDeployment := &appsv1.Deployment{
 		TypeMeta: genTypeMeta("Deployment"),

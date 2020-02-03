@@ -31,6 +31,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 )
 
+// createDatabaseWorkload - create sql database for the project.
+// Mariadb and Mysql support at the moment.
 func createDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	databaseDeployment := &appsv1.Deployment{
 		TypeMeta: genTypeMeta("Deployment"),
