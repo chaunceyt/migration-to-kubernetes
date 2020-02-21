@@ -6,7 +6,7 @@ Initial start was to move to flags. Later I plan to move to "github.com/urfave/c
 
 ## Issue
 
-I work in an environment that uses GitLab + GKE as the CI solution for our developers. We're currently using a helm chart to generate the Kubernetes manifests for each prprojects workload. These workloads contain the following services
+I work in an environment that uses GitLab + GKE as the CI solution for our developers. We're currently using a helm chart to generate the Kubernetes manifests for each projects workload. These workloads contain the following services
 
 - Apache/PHP7.x PHP-FPM
 - Mariadb
