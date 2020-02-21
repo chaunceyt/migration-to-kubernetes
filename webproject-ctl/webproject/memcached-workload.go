@@ -62,11 +62,11 @@ func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:            "memcached",
-							Image:           "memcached",
+							Name:            deploymentInput.CacheEngine,
+							Image:           deploymentInput.CacheEngineImage,
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Ports: []corev1.ContainerPort{
-								createContainerPort(6379),
+								createContainerPort(11211),
 							},
 						},
 					},
@@ -79,12 +79,10 @@ func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-memcached", metav1.GetOptions{})
 	if foundErr != nil {
 		// Create  Memcached Deployment
-		log.Println("Creating memcached deployment...")
 		result, err := client.AppsV1().Deployments(deploymentInput.Namespace).Create(memcachedDeployment)
 		if err != nil {
 			panic(err)
 		}
-		// log.Printf("Created memcached deployment %q.\n", resultRedis.GetName())
 		log.Printf("Created Memcached Deployment - Name: %q, UID: %q\n", result.GetObjectMeta().GetName(), result.GetObjectMeta().GetUID())
 
 	}
@@ -109,7 +107,6 @@ func createMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-memcached-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("Creating memcached service...")
 		service, errRedisService := client.CoreV1().Services(deploymentInput.Namespace).Create(service)
 		if errRedisService != nil {
 			panic(errRedisService)

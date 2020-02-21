@@ -21,8 +21,6 @@
 package main
 
 import (
-	"fmt"
-
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -54,8 +52,7 @@ func createWebProject(client *kubernetes.Clientset, deploymentInput WebProjectIn
 	case "memcached":
 		createMemcachedWorkload(client, deploymentInput)
 	default:
-		fmt.Println("Unsupported CacheEngine selected or not defined")
-
+		//fmt.Println("Unsupported CacheEngine selected or not defined")
 	}
 
 	// Create searchEngine.
@@ -63,8 +60,7 @@ func createWebProject(client *kubernetes.Clientset, deploymentInput WebProjectIn
 	case "solr":
 		createSolrWorkload(client, deploymentInput)
 	default:
-		fmt.Println("Unsupported SearchEngine selected or not defined")
-
+		//fmt.Println("Unsupported SearchEngine selected or not defined")
 	}
 	// Create project's primary workload.
 	createWebprojectWorkload(client, deploymentInput)

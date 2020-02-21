@@ -88,7 +88,6 @@ func createSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProject
 	// Create Solr Deployment
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-solr", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("Creating Solr deployment...")
 		resultSolr, errSolr := client.AppsV1().Deployments(deploymentInput.Namespace).Create(solrDeployment)
 		if errSolr != nil {
 			panic(errSolr)

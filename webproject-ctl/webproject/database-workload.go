@@ -95,7 +95,6 @@ func createDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebPro
 	// Create  Database Deployment
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName, metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("Creating database deployment...")
 		resultDatabase, errDatabase := client.AppsV1().Deployments(deploymentInput.Namespace).Create(databaseDeployment)
 		if errDatabase != nil {
 			panic(errDatabase)

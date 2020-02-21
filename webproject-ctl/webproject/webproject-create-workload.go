@@ -92,24 +92,21 @@ func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	// Create Web Project Deployment
 	foundWebProject, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName, metav1.GetOptions{})
 	if foundErr != nil {
-		fmt.Println("Creating webproject deployment...")
 		resultWebProject, errWebProject := client.AppsV1().Deployments(deploymentInput.Namespace).Create(deployment)
 		if errWebProject != nil {
 			panic(errWebProject)
 		}
-		fmt.Printf("Created Deployment - Name: %q, UID: %q\n", resultWebProject.GetObjectMeta().GetName(), resultWebProject.GetObjectMeta().GetUID())
+		log.Printf("Created Deployment - Name: %q, UID: %q\n", resultWebProject.GetObjectMeta().GetName(), resultWebProject.GetObjectMeta().GetUID())
 	} else {
-		fmt.Println("Updating webproject deployment...")
 		foundWebProject.Spec.Replicas = int32ptr(deploymentInput.Replicas)
 		foundWebProject.Spec.Template.Spec.Containers[0].Image = deploymentInput.PrimaryContainerImageTag
 		foundWebProjectResult, errFoundWebProject := client.AppsV1().Deployments(deploymentInput.Namespace).Update(foundWebProject)
 		if errFoundWebProject != nil {
 			panic(errFoundWebProject)
 		}
-		fmt.Printf("Updated Deployment - Name: %q, UID: %q\n", foundWebProjectResult.GetObjectMeta().GetName(), foundWebProjectResult.GetObjectMeta().GetUID())
+		log.Printf("Updated Deployment - Name: %q, UID: %q\n", foundWebProjectResult.GetObjectMeta().GetName(), foundWebProjectResult.GetObjectMeta().GetUID())
 	}
 
-	fmt.Println("Creating service for WebProject.")
 	serviceName := deploymentInput.DeploymentName + "-svc"
 
 	webprojectLabels := map[string]string{
@@ -136,7 +133,7 @@ func createWebprojectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 		if errWebprojectService != nil {
 			panic(errWebprojectService)
 		}
-		fmt.Printf("Created Webproject Service - Name: %q, UID: %q\n", webprojectServiceResp.GetObjectMeta().GetName(), webprojectServiceResp.GetObjectMeta().GetUID())
+		log.Printf("Created Webproject Service - Name: %q, UID: %q\n", webprojectServiceResp.GetObjectMeta().GetName(), webprojectServiceResp.GetObjectMeta().GetUID())
 
 	}
 }

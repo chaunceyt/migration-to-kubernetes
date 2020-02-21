@@ -53,7 +53,6 @@ func createPersistentVolumeClaim(pvcType string, client *kubernetes.Clientset, d
 	// Check to see if persistent volume claim exists already.
 	_, foundErr := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-"+pvcType+"-pvc", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("Creating pvc...")
 		result, err := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Create(pvc)
 		if err != nil {
 			panic(err)

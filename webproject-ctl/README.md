@@ -1,6 +1,6 @@
 # Webproject Control
 
-As I continue to teach myself Golang. This hack session I decided to that the [simple API endpoint](webproject-api-using-gin) and make it a cli tool.
+As I continue to teach myself Golang. This hack session I decided to take the [simple API endpoint](https://github.com/chaunceyt/go-examples/tree/master/webproject-api-using-gin) and make it a cli tool.
 
 Initial start was to move to flags. Later I plan to move to "github.com/urfave/cli" later.
 
@@ -23,6 +23,7 @@ Create a commandline tool that accepts parameters instructing it to create an en
 
 ```
 releases/webproject-ctl-darwin-amd64 \
+  -create \
   -deployment-name=vrt-manager \
   -primary-container-name=vrt-manager \
   -prinary-container-image-tag=chaunceyt/vrt-manager-httpd \

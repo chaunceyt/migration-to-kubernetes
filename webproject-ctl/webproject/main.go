@@ -22,7 +22,7 @@ package main
 
 //@TODO
 // - Check to see if object exists and update it. Similar to the kubectl apply -f filename.yaml
-// - Sidecar support
+// - Sidecar support (cache, cli)
 
 import (
 	"flag"
@@ -39,6 +39,7 @@ import (
 type WebProjectInput struct {
 	CacheEngine              string
 	CacheEngineImage         string
+	CreateProject            bool
 	DatabaseEngine           string
 	DatabaseEngineImage      string
 	DeleteProject            bool
@@ -61,6 +62,8 @@ type WebProjectInput struct {
 var usage = `Usage: webproject-ctl [options...]
 
 Options:
+  -create                       Create web project (required to create project).
+  -delete                       Delete web project (required to delete project).
   -cache-engine                 Cache Engine [memcached, redis].
   -cache-engine-image           Cache Engine Image [memcached:1.5.20, redis:5.0.7-alpine].
   -database-engine              DatabaseEngine [mysql or mariadb].
@@ -94,8 +97,10 @@ func main() {
 
 	deploymentName := flag.String("deployment-name", "", "The Deployment name. (required)")
 
+	// Create a project
+	createProject := flag.Bool("create", false, "Create WebProject")
 	// Delete a project
-	deleteProject := flag.Bool("delete-web-project", false, "Delete WebProject")
+	deleteProject := flag.Bool("delete", false, "Delete WebProject")
 
 	// Create a project
 	cacheEngine := flag.String("cache-engine", "", "")
@@ -131,18 +136,24 @@ func main() {
 
 	var requiredParameters int
 
+	if *deleteProject && *createProject {
+		usageAndExit("Invalid usage. You can not use -delete and -create at the same time.")
+	}
+
 	if *deleteProject {
-		requiredParameters = 2
+		requiredParameters = 3
 		if flag.NFlag() < requiredParameters {
 			fmt.Println("Deleting a project requires the namespace and deploymentname")
 		}
-	} else {
+	} else if *createProject {
 		// Ensure we get the required parameters.
-		requiredParameters := 3
+		requiredParameters := 4
 		if flag.NFlag() < requiredParameters {
 			usageAndExit("")
 		}
 
+	} else {
+		usageAndExit("Invalid usage")
 	}
 
 	// TODO: If database-engine isset the database-engine-image can not be empty
@@ -159,6 +170,7 @@ func main() {
 		Namespace:                *projectNamespace,
 		CacheEngine:              *cacheEngine,
 		CacheEngineImage:         *cacheEngineImage,
+		CreateProject:            *createProject,
 		DatabaseEngine:           *databaseEngine,
 		DatabaseEngineImage:      *databaseEngineImage,
 		SearchEngine:             *searchEngine,

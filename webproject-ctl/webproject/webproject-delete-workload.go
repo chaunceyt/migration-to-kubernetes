@@ -31,11 +31,8 @@ import (
 // deleteWebprojectWorkloadHandler - delete all of the objects related to a specific deployment name.
 func deleteWebprojectWorkloadHandler(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 
-	fmt.Println("Delete Webproject Workload")
 	/*
-	 * Delete all of the objects created by
-	 * label release=
-	 * Consider using the Gitlab RELEASE_NAME for the release value
+	 * Delete all of the objects related to the RELEASE_NAME
 	 */
 
 	// Delete cache workload.
@@ -58,7 +55,7 @@ func deletePVC(client *kubernetes.Clientset, deploymentInput WebProjectInput, pv
 	// Delete PVC based on pvcType db and webfiles
 	_, foundErr := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-"+pvcType+"-pvc", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("The Persistent Volume Claim " + deploymentInput.DeploymentName + "-" + pvcType + "-pvc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if err := client.CoreV1().PersistentVolumeClaims(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-"+pvcType+"-pvc", &metav1.DeleteOptions{}); err != nil {
 			log.Println(fmt.Errorf("Error while deleting PVC - %v", err))
@@ -71,10 +68,9 @@ func deletePVC(client *kubernetes.Clientset, deploymentInput WebProjectInput, pv
 // deleteRedisWorload - delete service and deployment.
 func deleteRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
 	// Delete redis serivce
-
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-redis-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("The Redis Service " + deploymentInput.DeploymentName + "-redis-svc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-redis-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Redis Service " + deploymentInput.DeploymentName + "-redis-svc")
@@ -84,7 +80,7 @@ func deleteRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 	// Delete Redis deployment.
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-redis", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("The Redis Deployment" + deploymentInput.DeploymentName + "-redis does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-redis", &metav1.DeleteOptions{}); err != nil {
 			log.Println(fmt.Errorf("Error while Redis Deployment - %v", err))
@@ -96,11 +92,10 @@ func deleteRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 
 // deleteMemcachedWorkload - delete service and deployment.
 func deleteMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
-
 	// Delete Memcached service.
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-memcached-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("The Memcached Service " + deploymentInput.DeploymentName + "-memcached-svc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-memcached-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Memcached Service " + deploymentInput.DeploymentName + "-memcached-svc")
@@ -110,7 +105,7 @@ func deleteMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 	// Delete Memcached deployment.
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-memcached", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("The Memcached Deployment" + deploymentInput.DeploymentName + "-memcached does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-memcached", &metav1.DeleteOptions{}); err != nil {
 			log.Println(fmt.Errorf("Error while Memcache Deployment - %v", err))
@@ -121,11 +116,10 @@ func deleteMemcachedWorkload(client *kubernetes.Clientset, deploymentInput WebPr
 
 // deleteSolrWorkload - delete service and deployment.
 func deleteSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
-
 	// Delete Solr service.
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-solr-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("The Solr Service " + deploymentInput.DeploymentName + "-solr-svc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-solr-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Solr Service " + deploymentInput.DeploymentName + "-solr-svc")
@@ -133,7 +127,7 @@ func deleteSolrWorkload(client *kubernetes.Clientset, deploymentInput WebProject
 	}
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-solr", metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("The Solr Deployment" + deploymentInput.DeploymentName + "-solr does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-solr", &metav1.DeleteOptions{}); err != nil {
 			log.Println(fmt.Errorf("Error while deleting Solr Deployment - %v", err))
@@ -147,7 +141,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	// Delete ingress
 	_, foundIngressErr := client.ExtensionsV1beta1().Ingresses(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-ing", metav1.GetOptions{})
 	if foundIngressErr != nil {
-
+		// Do nothing.
 	} else {
 		if ingressErr := client.ExtensionsV1beta1().Ingresses(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-ing", &metav1.DeleteOptions{}); ingressErr != nil {
 			log.Println(fmt.Errorf("Error while Deleting Ingress - %v", ingressErr))
@@ -157,7 +151,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	// Delete service
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("The Webproject Service " + deploymentInput.DeploymentName + "-svc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Webproject Service " + deploymentInput.DeploymentName + "-svc")
@@ -166,7 +160,7 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 	// Delete web deployment
 	_, foundErr := client.AppsV1().Deployments(deploymentInput.Namespace).Get(deploymentInput.DeploymentName, metav1.GetOptions{})
 	if foundErr != nil {
-		log.Println("The Web project Deployment" + deploymentInput.DeploymentName + " does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if err := client.AppsV1().Deployments(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName, &metav1.DeleteOptions{}); err != nil {
 			log.Println(fmt.Errorf("Error while deleting WebProject Deployment - %v", err))
@@ -180,11 +174,10 @@ func deleteWebProjectWorkload(client *kubernetes.Clientset, deploymentInput WebP
 
 // deleteDatabaseWorkload - delete service, deployment and pvc.
 func deleteDatabaseWorkload(client *kubernetes.Clientset, deploymentInput WebProjectInput) {
-
 	// Delete database service
 	_, foundServiceErr := client.CoreV1().Services(deploymentInput.Namespace).Get(deploymentInput.DeploymentName+"-db-svc", metav1.GetOptions{})
 	if foundServiceErr != nil {
-		log.Println("The Database Service " + deploymentInput.DeploymentName + "-db-svc does not exist. Nothing to delete.")
+		// Do nothing.
 	} else {
 		if serviceErr := client.CoreV1().Services(deploymentInput.Namespace).Delete(deploymentInput.DeploymentName+"-db-svc", &metav1.DeleteOptions{}); serviceErr != nil {
 			log.Println("The Database Service " + deploymentInput.DeploymentName + "-db-svc")

@@ -62,8 +62,8 @@ func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						{
-							Name:            "redis",
-							Image:           "redis",
+							Name:            deploymentInput.CacheEngine,
+							Image:           deploymentInput.CacheEngineImage,
 							ImagePullPolicy: corev1.PullIfNotPresent,
 							Ports: []corev1.ContainerPort{
 								createContainerPort(6379),
@@ -77,7 +77,6 @@ func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 	}
 
 	// Create  Redis Deployment
-	log.Println("Creating redis deployment...")
 	result, err := client.AppsV1().Deployments(deploymentInput.Namespace).Create(redisDeployment)
 	if err != nil {
 		panic(err)
@@ -102,7 +101,6 @@ func createRedisWorkload(client *kubernetes.Clientset, deploymentInput WebProjec
 		},
 	}
 
-	log.Println("Creating redis service...")
 	service, errRedisService := client.CoreV1().Services(deploymentInput.Namespace).Create(service)
 	if errRedisService != nil {
 		panic(errRedisService)
