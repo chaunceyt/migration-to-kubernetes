@@ -131,4 +131,59 @@ docker system prune --volumes
 
 ```
 
+### SPIKE: Gatekeeper - Policy Controller for Kubernetes
+
+- [Gatekeeper](https://github.com/open-policy-agent/gatekeeper)
+- [Webinar: K8s with OPA Gatekeeper](https://www.youtube.com/watch?v=v4wJE3I8BYM)
+
+```
+kind create cluster --name opa-gatekeeper --config kind-config.yaml --image kindest/node:v1.18.0
+
+# Download the gatekeeper manifest and review what is being created.
+wget https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml
+
+# install
+# https://github.com/open-policy-agent/gatekeeper#how-to-use-gatekeeper
+kubectl apply -f gatekeeper.yaml
+
+# work through the libraries to better understand how the ConstraintTemplate work.
+# https://github.com/open-policy-agent/gatekeeper#constraint-templates
+git clone https://github.com/open-policy-agent/gatekeeper.git
+cd gatekeeper/library/pod-security-policy
+bash test.sh
+
+```
+
+### SPIKE: Vertical Pod Autoscaling
+
+Vertical Pod autoscaling involves adjusting a Pod's CPU and memory requests
+
+```
+mkdir ~/development/kind-metrics-server
+cd ~/development/kind-metrics-server
+wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/components.yaml
+# edit the deployment adding the following directives
+# - --kubelet-insecure-tls
+# - --kubelet-preferred-address-types=InternalIP
+kubectl apply -f components.yaml
+# Wait for awhile to get some metrics
+kubectl top no
+
+# Install VPA
+git clone https://github.com/kubernetes/autoscaler
+cd autoscaler/vertical-pod-autoscaler/
+cd hack
+./vpa-up.sh
+# Walk through the examples here
+https://cloud.google.com/kubernetes-engine/docs/how-to/vertical-pod-autoscaling
+
+Modes:
+- Recommendation 
+- Auto
+
+```
+
+### SPIKE: Horizontal Pod Autoscaler
+
+The Horizontal Pod Autoscaler automatically scales the number of pods in a replication controller, deployment, replica set or stateful set based on observed CPU utilization 
 
