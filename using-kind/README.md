@@ -165,6 +165,8 @@ wget https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.3.6/
 # edit the deployment adding the following directives
 # - --kubelet-insecure-tls
 # - --kubelet-preferred-address-types=InternalIP
+# or run kubectl patch deployment metrics-server -n kube-system -p '{"spec":{"template":{"spec":{"containers":[{"name":"metrics-server","args":["--cert-dir=/tmp", "--secure-port=4443", "--kubelet-insecure-tls","--kubelet-preferred-address-types=InternalIP"]}]}}}}'
+
 kubectl apply -f components.yaml
 # Wait for awhile to get some metrics
 kubectl top no
