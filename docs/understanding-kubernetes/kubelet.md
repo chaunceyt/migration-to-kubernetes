@@ -4,17 +4,54 @@ The **kubelet** is a daemon that runs on each node within a Kubernetes cluster.
 
 - [Command line reference](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/)
 - [Configuring each kubelet in your cluster using kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/)
+- [TGI Kubernetes 086: Grokking Kubernetes - The kubelet](https://www.youtube.com/watch?v=CKpSyl5vgK8) ([shownotess](https://github.com/vmware-tanzu/tgik/tree/master/episodes/086))
 
 ##Responsibility
 
 Manage pods that have a `nodeName:` that matches their nodeName.
+
+The following `kubectl` commands are "expressed and implemented" by the kubelet's api. The Kubernetes API proxies these commands to kubelet
+
+- exec
+- attach
+- cp
+- log
+
+
+## Default permissions within a cluster
+
+When cluster is provisioned using `kubeadm`. 
+
+```
+ kubectl --kubeconfig=/etc/kubernetes/kubelet.conf auth can-i --list
+Resources                                                       Non-Resource URLs   Resource Names   Verbs
+selfsubjectaccessreviews.authorization.k8s.io                   []                  []               [create]
+selfsubjectrulesreviews.authorization.k8s.io                    []                  []               [create]
+certificatesigningrequests.certificates.k8s.io/selfnodeclient   []                  []               [create]
+                                                                [/api/*]            []               [get]
+                                                                [/api]              []               [get]
+                                                                [/apis/*]           []               [get]
+                                                                [/apis]             []               [get]
+                                                                [/healthz]          []               [get]
+                                                                [/healthz]          []               [get]
+                                                                [/livez]            []               [get]
+                                                                [/livez]            []               [get]
+                                                                [/openapi/*]        []               [get]
+                                                                [/openapi]          []               [get]
+                                                                [/readyz]           []               [get]
+                                                                [/readyz]           []               [get]
+                                                                [/version/]         []               [get]
+                                                                [/version/]         []               [get]
+                                                                [/version]          []               [get]
+                                                                [/version]          []               [get]
+```
 
 ## Run in standalone mode
 
 Use the kubelet to manage pods without a Kubernetes cluster.
 
 
-### Centos
+### Centos 7
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
 
 ```
@@ -43,6 +80,8 @@ Update systemd file: `vi /usr/lib/systemd/system/kubelet.service`
 ```
 # update ExecStart
 ExecStart=/usr/bin/kubelet \
+  --address=127.0.0.1 \
+  --hostname-override=127.0.0.1 \
   --file-check-frequency 30s \
   --max-pods 10 \
   --minimum-image-ttl-duration 300s \
@@ -119,3 +158,7 @@ spec:
         path: /mnt/project1/docroot
 ```
 
+```
+curl --stderr /dev/null http://localhost:10255/pods
+curl --stderr /dev/null http://localhost:10255/metrics
+```

@@ -1,18 +1,39 @@
 # Notes...
 
+- Prometheus is an open-source system metrics-based monitoring and alerting tool. 
+- Pull-based metrics gathering.
+- PromQL (query language)
+- - Architecture https://prometheus.io/docs/introduction/overview/#architecture
+
+Is not for logging or tracing, automatic and/or realtime anomaly detection
+
 ## Deep Dive
 
 Goal: Understand how to use and support prometheus and alertmanager in a production environment.
 
+Understand:
 
-- Highly available? https://prometheus.io/docs/introduction/faq/#can-prometheus-be-made-highly-available
-- Federation https://prometheus.io/docs/prometheus/latest/federation/
-- Hierarchical federation collect time-series data from multiple lower-level servers
-- Cross-service federation scrapes selected data from another server
-- Security https://prometheus.io/docs/operating/security/
-- Client Libraries https://prometheus.io/docs/instrumenting/clientlibs/
-- PHP https://github.com/endclothing/prometheus_client_php
-- Go https://github.com/prometheus/client_golang
+- how to install prometheus and integrating with alertmanager
+- promql
+- push mode using pushgateway
+
+
+Alerting:
+
+- Rule syntax
+- Expressions
+- Routing tree
+- grouping
+- group_interval
+- group_wait
+- repeat_interval
+- throttling and repetition
+- inhibitions
+- recievers
+- resolved alerts
+- create notification templates
+- silences
+ 
 
 
 ## Usage patterns
@@ -22,7 +43,9 @@ Goal: Understand how to use and support prometheus and alertmanager in a product
 - Alerting
 
 
-#### Command line options
+### Command line options
+
+#### prometheus
 
 `prometheus-2.19.2.darwin-amd64/prometheus -h`
 
@@ -172,8 +195,158 @@ up{instance="localhost:9090", job="prometheus"} => 1 @[1595510365.04]
 up{instance="localhost:9100", job="workstation"} => 1 @[1595510365.04]
 ```
 
+#### alertmanager 
 
-#### Run binaries locally to see how things work together.
+`alertmanager-0.21.0.darwin-amd64/alertmanager -h`
+
+```
+usage: alertmanager [<flags>]
+
+Flags:
+  -h, --help                     Show context-sensitive help (also try --help-long and --help-man).
+      --config.file="alertmanager.yml"
+                                 Alertmanager configuration file name.
+      --storage.path="data/"     Base path for data storage.
+      --data.retention=120h      How long to keep data for.
+      --alerts.gc-interval=30m   Interval between alert GC.
+      --web.external-url=WEB.EXTERNAL-URL
+                                 The URL under which Alertmanager is externally reachable (for example, if Alertmanager is served via a reverse proxy). Used for
+                                 generating relative and absolute links back to Alertmanager itself. If the URL has a path portion, it will be used to prefix all HTTP
+                                 endpoints served by Alertmanager. If omitted, relevant URL components will be derived automatically.
+      --web.route-prefix=WEB.ROUTE-PREFIX
+                                 Prefix for the internal routes of web endpoints. Defaults to path of --web.external-url.
+      --web.listen-address=":9093"
+                                 Address to listen on for the web interface and API.
+      --web.get-concurrency=0    Maximum number of GET requests processed concurrently. If negative or zero, the limit is GOMAXPROC or 8, whichever is larger.
+      --web.timeout=0            Timeout for HTTP requests. If negative or zero, no timeout is set.
+      --cluster.listen-address="0.0.0.0:9094"
+                                 Listen address for cluster. Set to empty string to disable HA mode.
+      --cluster.advertise-address=CLUSTER.ADVERTISE-ADDRESS
+                                 Explicit address to advertise in cluster.
+      --cluster.peer=CLUSTER.PEER ...
+                                 Initial peers (may be repeated).
+      --cluster.peer-timeout=15s
+                                 Time to wait between peers to send notifications.
+      --cluster.gossip-interval=200ms
+                                 Interval between sending gossip messages. By lowering this value (more frequent) gossip messages are propagated across the cluster more
+                                 quickly at the expense of increased bandwidth.
+      --cluster.pushpull-interval=1m0s
+                                 Interval for gossip state syncs. Setting this interval lower (more frequent) will increase convergence speeds across larger clusters at
+                                 the expense of increased bandwidth usage.
+      --cluster.tcp-timeout=10s  Timeout for establishing a stream connection with a remote node for a full state sync, and for stream read and write operations.
+      --cluster.probe-timeout=500ms
+                                 Timeout to wait for an ack from a probed node before assuming it is unhealthy. This should be set to 99-percentile of RTT (round-trip
+                                 time) on your network.
+      --cluster.probe-interval=1s
+                                 Interval between random node probes. Setting this lower (more frequent) will cause the cluster to detect failed nodes more quickly at the
+                                 expense of increased bandwidth usage.
+      --cluster.settle-timeout=1m0s
+                                 Maximum time to wait for cluster connections to settle before evaluating notifications.
+      --cluster.reconnect-interval=10s
+                                 Interval between attempting to reconnect to lost peers.
+      --cluster.reconnect-timeout=6h0m0s
+                                 Length of time to attempt to reconnect to a lost peer.
+      --log.level=info           Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt        Output format of log messages. One of: [logfmt, json]
+      --version                  Show application version.
+```
+
+#### node_exporter
+
+`node_exporter-1.0.1.darwin-amd64/node_exporter -h`
+
+```
+usage: node_exporter [<flags>]
+
+Flags:
+  -h, --help                    Show context-sensitive help (also try --help-long and --help-man).
+      --collector.filesystem.ignored-mount-points="^/(dev)($|/)"
+                                Regexp of mount points to ignore for filesystem collector.
+      --collector.filesystem.ignored-fs-types="^devfs$"
+                                Regexp of filesystem types to ignore for filesystem collector.
+      --collector.netdev.device-blacklist=COLLECTOR.NETDEV.DEVICE-BLACKLIST
+                                Regexp of net devices to blacklist (mutually exclusive to device-whitelist).
+      --collector.netdev.device-whitelist=COLLECTOR.NETDEV.DEVICE-WHITELIST
+                                Regexp of net devices to whitelist (mutually exclusive to device-blacklist).
+      --collector.ntp.server="127.0.0.1"
+                                NTP server to use for ntp collector
+      --collector.ntp.protocol-version=4
+                                NTP protocol version
+      --collector.ntp.server-is-local
+                                Certify that collector.ntp.server address is not a public ntp server
+      --collector.ntp.ip-ttl=1  IP TTL to use while sending NTP query
+      --collector.ntp.max-distance=3.46608s
+                                Max accumulated distance to the root
+      --collector.ntp.local-offset-tolerance=1ms
+                                Offset between local clock and local ntpd time to tolerate
+      --path.procfs="/proc"     procfs mountpoint.
+      --path.sysfs="/sys"       sysfs mountpoint.
+      --path.rootfs="/"         rootfs mountpoint.
+      --collector.runit.servicedir="/etc/service"
+                                Path to runit service directory.
+      --collector.supervisord.url="http://localhost:9001/RPC2"
+                                XML RPC endpoint.
+      --collector.textfile.directory=""
+                                Directory to read text files with metrics from.
+      --collector.boottime      Enable the boottime collector (default: enabled).
+      --collector.buddyinfo     Enable the buddyinfo collector (default: disabled).
+      --collector.diskstats     Enable the diskstats collector (default: enabled).
+      --collector.filesystem    Enable the filesystem collector (default: enabled).
+      --collector.loadavg       Enable the loadavg collector (default: enabled).
+      --collector.meminfo       Enable the meminfo collector (default: enabled).
+      --collector.netdev        Enable the netdev collector (default: enabled).
+      --collector.ntp           Enable the ntp collector (default: disabled).
+      --collector.runit         Enable the runit collector (default: disabled).
+      --collector.supervisord   Enable the supervisord collector (default: disabled).
+      --collector.textfile      Enable the textfile collector (default: enabled).
+      --collector.time          Enable the time collector (default: enabled).
+      --collector.uname         Enable the uname collector (default: enabled).
+      --collector.cpu           Enable the cpu collector (default: enabled).
+      --web.listen-address=":9100"
+                                Address on which to expose metrics and web interface.
+      --web.telemetry-path="/metrics"
+                                Path under which to expose metrics.
+      --web.disable-exporter-metrics
+                                Exclude metrics about the exporter itself (promhttp_*, process_*, go_*).
+      --web.max-requests=40     Maximum number of parallel scrape requests. Use 0 to disable.
+      --collector.disable-defaults
+                                Set all collectors to disabled by default.
+      --web.config=""           [EXPERIMENTAL] Path to config yaml file that can enable TLS or authentication.
+      --log.level=info          Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt       Output format of log messages. One of: [logfmt, json]
+      --version                 Show application version.
+```
+
+#### pushgateway
+
+`pushgateway-1.2.0.darwin-amd64/pushgateway -h`
+
+```
+usage: pushgateway [<flags>]
+
+The Pushgateway
+
+Flags:
+  -h, --help                     Show context-sensitive help (also try --help-long and --help-man).
+      --web.listen-address=":9091"
+                                 Address to listen on for the web interface, API, and telemetry.
+      --web.telemetry-path="/metrics"
+                                 Path under which to expose metrics.
+      --web.external-url=        The URL under which the Pushgateway is externally reachable.
+      --web.route-prefix=""      Prefix for the internal routes of web endpoints. Defaults to the path of --web.external-url.
+      --web.enable-lifecycle     Enable shutdown via HTTP request.
+      --web.enable-admin-api     Enable API endpoints for admin control actions.
+      --persistence.file=""      File to persist metrics. If empty, metrics are only kept in memory.
+      --persistence.interval=5m  The minimum interval at which to write out the persistence file.
+      --push.disable-consistency-check
+                                 Do not check consistency of pushed metrics. DANGEROUS.
+      --log.level=info           Only log messages with the given severity or above. One of: [debug, info, warn, error]
+      --log.format=logfmt        Output format of log messages. One of: [logfmt, json]
+      --version                  Show application version.
+```
+      
+
+### Run binaries locally to see how things work together.
 
 ```
 
@@ -320,12 +493,9 @@ https://prometheus.io/docs/practices/histograms/
 
 - counter - never descrease only increases
 - gauge (values can both increase and decrease)
-
 - histograms (more complex)
 - historgram sum metric
 - historgram count metrics
-
-
 - quantile metrics
 - quantile sum
 - quantile count 
@@ -599,3 +769,55 @@ Responsible for handling alerts sent to it by clients. i.e. Prometheus server
 - Overview https://prometheus.io/docs/introduction/overview/
 - Prometheus configuration: https://prometheus.io/docs/prometheus/latest/configuration/configuration/
 - Example configuration file: https://github.com/prometheus/prometheus/blob/release-2.15/config/testdata/conf.good.yml
+- Highly available? https://prometheus.io/docs/introduction/faq/#can-prometheus-be-made-highly-available
+- Federation https://prometheus.io/docs/prometheus/latest/federation/
+- Hierarchical federation collect time-series data from multiple lower-level servers
+- Cross-service federation scrapes selected data from another server
+- Security https://prometheus.io/docs/operating/security/
+- Client Libraries https://prometheus.io/docs/instrumenting/clientlibs/
+- PHP https://github.com/endclothing/prometheus_client_php
+- Go https://github.com/prometheus/client_golang
+
+## Exporters
+
+
+- https://github.com/prometheus/mysqld_exporter
+- https://github.com/prometheus/memcached_exporter
+- https://github.com/prometheus/haproxy_exporter
+- https://github.com/jonnenauha/prometheus_varnish_exporter
+- https://github.com/wrouesnel/postgres_exporter
+- https://github.com/slok/ecs-exporter
+- https://github.com/bakins/php-fpm-exporter
+
+
+#### Postgres exporter
+
+```
+docker run --name postgres-server -e POSTGRES_PASSWORD=my-secret-pw -p 5432:5432 -d postgres
+wget https://github.com/wrouesnel/postgres_exporter/releases/download/v0.8.0/postgres_exporter_v0.8.0_darwin-amd64.tar.gz
+tar -xvzf postgres_exporter_v0.8.0_darwin-amd64.tar.gz
+postgres_exporter_v0.8.0_darwin-amd64/postgres_exporter -h
+
+export DATA_SOURCE_NAME="postgresql://postgres:my-secret-pw@localhost:5432/postgres?sslmode=disable
+
+```
+
+
+#### Redis exporter
+
+```
+wget https://github.com/oliver006/redis_exporter/releases/download/v1.9.0/redis_exporter-v1.9.0.darwin-amd64.tar.gz
+tar -xvzf redis_exporter-v1.9.0.darwin-amd64.tar.gz
+redis_exporter-v1.9.0.darwin-amd64/redis_exporter -h
+
+docker run --name redis-server -p 6379:6379 -d redis
+redis_exporter-v1.9.0.darwin-amd64/redis_exporter
+curl localhost:9121/metrics
+```
+
+#### Memcached exporter
+
+```
+docker run --name memcache-server -p 11211:11211 -d memcached memcached -m 64
+memcached_exporter-0.7.0.darwin-amd64/memcached_exporter --memcached.address="localhost:11211"
+```
