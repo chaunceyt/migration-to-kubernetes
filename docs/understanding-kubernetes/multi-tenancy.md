@@ -1,6 +1,8 @@
 # Notes on Kubernetes multi tenancy best practices
 
-[Cluster multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/concepts/multitenancy-overview)
+- [Cluster multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/concepts/multitenancy-overview)
+- [Best practices for enterprise multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/best-practices/enterprise-multitenancy)
+
 
 > A multi-tenant cluster is shared by multiple users and/or workloads which are referred to as "tenants". 
 
