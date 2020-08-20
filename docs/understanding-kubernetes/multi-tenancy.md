@@ -1,12 +1,15 @@
 # Notes on Kubernetes multi tenancy best practices
 
-- [Cluster multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/concepts/multitenancy-overview)
-- [Best practices for enterprise multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/best-practices/enterprise-multitenancy)
-
-
 > A multi-tenant cluster is shared by multiple users and/or workloads which are referred to as "tenants". 
 
-The Kubernetes cluster that I am currently the administrator of, is a multi tenant cluster. We run all of our project's development environments. The patterns we're using for isolation is:
+The Kubernetes cluster that I am currently the administrator of, is a multi tenant cluster. We run all of our project's development environments.
+
+Types of tenancy
+
+- Soft (trust) - current pattern
+- Hard (no trust)
+
+ The patterns we're using for isolation is:
 
 - Namespaces (Project isolation)
 - Taints/Tolerations (Node isolation)
@@ -116,3 +119,11 @@ kubectl delete ns team-c
 ```
 
 The Hierarchical Namespace Controller (HNC) doesn't address a need in the current environment I help manage.
+
+
+# Resources
+- [Cluster multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/concepts/multitenancy-overview)
+- [Best practices for enterprise multi-tenancy](https://cloud.google.com/kubernetes-engine/docs/best-practices/enterprise-multitenancy)
+- [Kubernetes at Cruise
+Two Years of Multitenancy](https://static.sched.com/hosted_files/kccncna19/14/Kubernetes%20Multitenancy%20-%20Karl%20Isenberg%20-%20KubeCon%20NA%202019.pdf)
+- [Kubernetes-Multi-tenant-implementation-on-Azure-Kubernetes-Services](https://github.com/TheAzureGuy007/Kubernetes-Multi-tenant-implementation-using-Azure-Kubernetes-Services)
