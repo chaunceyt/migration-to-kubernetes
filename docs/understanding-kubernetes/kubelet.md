@@ -10,9 +10,10 @@ The **kubelet** is a daemon that runs on each node within a Kubernetes cluster.
 
 Manage pods that have a `nodeName:` that matches their nodeName.
 
-The following `kubectl` commands are "expressed and implemented" by the kubelet's api. The Kubernetes API proxies these commands to kubelet
+The following `kubectl` commands are "expressed and implemented" by the kubelet's [api](https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/server/server.go). The Kubernetes API proxies these commands to kubelet
 
-- exec
+
+- exec ([how kubectl exec works](https://erkanerol.github.io/post/how-kubectl-exec-works/))
 - attach
 - cp
 - log
@@ -79,6 +80,10 @@ Update systemd file: `vi /usr/lib/systemd/system/kubelet.service`
 
 ```
 # update ExecStart
+# Ensure kubelet can pull down private images.
+# Config to use /root/.docker/config.json
+Environment=HOME=/root
+User=root
 ExecStart=/usr/bin/kubelet \
   --address=127.0.0.1 \
   --hostname-override=127.0.0.1 \

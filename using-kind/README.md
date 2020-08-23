@@ -189,3 +189,61 @@ Modes:
 
 The Horizontal Pod Autoscaler automatically scales the number of pods in a replication controller, deployment, replica set or stateful set based on observed CPU utilization 
 
+# Enable additional admissiion contollers
+
+- [Using Admission Controllers](https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/)
+- [A Guide to Kubernetes Admission Controllers](https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/)
+
+
+```
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+kubeadmConfigPatches:
+- |
+  apiVersion: kubeadm.k8s.io/v1beta2
+  kind: ClusterConfiguration
+  metadata:
+    name: config
+  apiServer:
+    extraArgs:
+      "enable-admission-plugins": "NamespaceLifecycle,LimitRanger,ServiceAccount,TaintNodesByCondition,Priority,DefaultTolerationSeconds,DefaultStorageClass,PersistentVolumeClaimResize,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+```
+
+
+# Enable feature-gates
+
+```
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+kubeadmConfigPatches:
+- |
+  apiVersion: kubeadm.k8s.io/v1beta2
+  kind: ClusterConfiguration
+  metadata:
+    name: config
+  apiServer:
+    extraArgs:
+      "enable-admission-plugins": "NamespaceLifecycle,LimitRanger,ServiceAccount,TaintNodesByCondition,Priority,DefaultTolerationSeconds,DefaultStorageClass,PersistentVolumeClaimResize,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota"
+      "feature-gates": "EphemeralContainers=true,DynamicKubeletConfig=true"
+  scheduler:
+    extraArgs:
+      "feature-gates": "EphemeralContainers=true,DynamicKubeletConfig=true"
+  controllerManager:
+    extraArgs:
+      "feature-gates": "EphemeralContainers=true,DynamicKubeletConfig=true"
+- |
+  kind: KubeletConfiguration
+  featureGates:
+    DynamicKubeletConfig: true
+    EphemeralContainers: true
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+```
