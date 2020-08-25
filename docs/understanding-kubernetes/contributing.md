@@ -47,7 +47,7 @@ mkdir $GOPATH/src/k8s.io
 cd $GOPATH/src/k8s.io
 git clone git@github.com:$GITHUB_USER/kubernetes.git
 cd $GOPATH/src/k8s.io/kubernetes
-git remote upstream https://github.com/kubernetes/kubernetes.git
+git remote add upstream https://github.com/kubernetes/kubernetes.git
 git remote set-url --push upstream no_push
 git fetch upstream
 git checkout master
