@@ -52,6 +52,25 @@ git remote set-url --push upstream no_push
 git fetch upstream
 git checkout master
 git rebase upstream/master
+
+```
+
+## Confirm setup
+
+Compile a few of the binaries
+
+```
+# Compile kubectl
+make WHAT=cmd/kubectl
+_output/bin/kubectl version
+
+# Compile other components
+make WHAT=cmd/kubelet
+_output/bin/kubelet -h
+
+make WHAT=cmd/kube-scheduler
+_output/bin/kube-scheduler -h
+
 ```
 
 # Code
