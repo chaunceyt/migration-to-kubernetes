@@ -5,7 +5,7 @@
 - [Managing secrets deployment in Kubernetes using Sealed Secrets](https://aws.amazon.com/blogs/opensource/managing-secrets-deployment-in-kubernetes-using-sealed-secrets/)
 - [TGI Kubernetes 120: CSI and Secrets!](https://www.youtube.com/watch?v=IznsHhKL428)
 - [TGI Kubernetes 113: Kubernetes Secrets Take 3](https://www.youtube.com/watch?v=an9D2FyFwR0)
-
+- [TGI Kubernetes 132: Sealed Secrets!](https://www.youtube.com/watch?v=x-cDk8DIvwE) [hackmd](https://hackmd.io/q2lXm3UFTv26dSsvfG1VRA)
 ## Install and test.
 
 ```
@@ -18,4 +18,8 @@ chmod +x $HOME/bin/kubeseal
 kubectl create secret generic project-secret --dry-run --from-literal=username=admin --dry-run --from-literal=password=4P@s5wOrd2N0 -o yaml | kubeseal > project-secret.yaml
 
 ```
+
+## Notes
+
+Every 30 days the sealing key is renewed. So understand the [secret rotation](https://github.com/bitnami-labs/sealed-secrets#secret-rotation) process
 

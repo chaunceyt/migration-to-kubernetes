@@ -42,6 +42,7 @@ gimme stable
 
 vi .envrc
 export GOPATH="${PWD}/go"
+export PATH=$PATH:${GOPATH}/bin
 
 mkdir $GOPATH/src/k8s.io
 cd $GOPATH/src/k8s.io
@@ -52,6 +53,12 @@ git remote set-url --push upstream no_push
 git fetch upstream
 git checkout master
 git rebase upstream/master
+
+# install kubetest
+cd $GOPATH/src/k8s.io
+git clone https://github.com/kubernetes/test-infra.git
+cd test-infra/
+GO111MODULE=on go install ./kubetest
 
 ```
 
@@ -95,6 +102,23 @@ kind build node-image --image=feature-branch-name
 
 # Create cluster from feature branch.
 kind create cluster --image=feature-branch-name
+
+Run e2e tests
+# --provider string    Kubernetes provider such as gce, gke, aws, etc
+# --test               Run Ginkgo tests.
+# --extract exactStrategies       Extract k8s binaries from the specified release location
+# --test_args string        Space-separated list of arguments to pass to Ginkgo test runner.
+
+K8S_VERSION=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+export KUBERNETES_CONFORMANCE_TEST=y
+export KUBECONFIG="$HOME/.kube/config
+
+# took a while to complete.
+kubetest --provider=skeleton \
+	--test \
+	--test_args=”--ginkgo.focus=\[Conformance\]” \
+	--extract ${K8S_VERSION} | tee test.out
+
 ```
 
 
