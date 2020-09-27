@@ -164,6 +164,66 @@ spec:
 ```
 
 ```
-curl --stderr /dev/null http://localhost:10255/pods
-curl --stderr /dev/null http://localhost:10255/metrics
+# https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/server/server.go#L328
+curl -L -sk https://localhost:10250/pods
+
+# get prom2json installed
+curl -L -sk https://localhost:10250/healthz/log
+curl -L -sk https://localhost:10250/healthz/ping
+curl -L -sk https://localhost:10250/stats/summary
+curl -L -sk https://localhost:10250/metrics
+curl -L -sk https://localhost:10250/metrics/cadvisor
+curl -L -sk https://localhost:10250/metrics/resource
+
+# Logs on host system
+curl -L -sk https://localhost:10250/logs
+curl -L -sk https://localhost:10250/logs/syslog
+
+# https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/server/server.go#L484
+curl -L -sk https://localhost:10250/containerLogs/[namspace]/[podName]/[container]
+
+# Run command in a container
+# https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/server/server.go#L419
+curl -sk -XPOST -d 'cmd=ls -ltr /' https://localhost:10250/run/[namspace]/[podName]/[container]
+
+```
+
+
+## From source
+
+```
+# ensure go, make, gcc are installed
+cd ~/path/to/development/directory
+git clone https://github.com/kubernetes/kubernetes
+cd kubernetes
+make WHAT=cmd/kubelet
+mkdir /etc/kubelet-standalone
+cp _output/bin/kubelet /usr/local/bin/kubelet
+
+# ensure executable is in your path.
+kubelet -h
+
+# update the systemd file above.
+
+```
+
+`/etc/kubelet-standalone/config.yaml` for `kubelet --config=/etc/kubelet-standalone/config.yaml` 
+
+```
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+address: 0.0.0.0
+staticPodPath: /etc/kubernetes/manifests
+authentication:
+ webhook:
+   enabled: false
+ anonymous:
+   enabled: true
+authorization:
+  mode: AlwaysAllow
+maxPods: 5
+containerRuntime: docker
+failSwapFalse: false
+serializeImagePulls: true
+fileCheckFrequency: 20s
 ```

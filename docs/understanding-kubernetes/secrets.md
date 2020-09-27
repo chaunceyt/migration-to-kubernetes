@@ -6,6 +6,7 @@
 - [TGI Kubernetes 113: Kubernetes Secrets Take 3](https://www.youtube.com/watch?v=an9D2FyFwR0) ([git repo](https://github.com/vmware-tanzu/tgik/tree/master/episodes/113))
 - [Understand secrets management in Kubernetes](https://www.youtube.com/watch?v=KmhM33j5WYk)
 - [Base64 is not encryption](https://www.youtube.com/watch?v=f4Ru6CPG1z4)
+- [Kubernetes KMS Plugin Provider for HashiCorp Vault](https://github.com/oracle/kubernetes-vault-kms-plugin)
 - [kubesec](https://github.com/shyiko/kubesec) Secure secret management for Kubernetes (with gpg, Google Cloud KMS and AWS KMS backends).
 - [Kamus](https://github.com/Soluto/kamus) manages encrypted secrets than can be decrypted only by the application
 - [sops](https://github.com/mozilla/sops) an editor of encrypted files that supports YAML, JSON, ENV, INI and BINARY formats and encrypts with AWS KMS, GCP KMS, Azure Key Vault and PGP
@@ -31,6 +32,19 @@ kubectl create secret generic project-secret --dry-run=client \
 	--from-literal=username=admin \
 	--from-literal=password=4P@s5wOrd2N0
 
+```
+
+Create a secret using `stringData:`
+
+```
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+stringData:
+  username: admin
+  password: 4P@s5wOrd2N0
 ```
 
 NOTE: By default secrets are stored in etcd in plaintext. 
