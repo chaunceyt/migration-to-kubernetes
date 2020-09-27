@@ -98,7 +98,7 @@ ExecStart=/usr/bin/kubelet \
 Run the following commands
 
 ```
-systemctl daemon-relaod
+systemctl daemon-reload
 systemctl start kubelet
 systemctl status kubelet
 systemctl enable kubelet
