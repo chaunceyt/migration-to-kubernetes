@@ -4,6 +4,8 @@
 
 - [Development Guide](https://github.com/kubernetes/community/blob/master/contributors/devel/development.md)
 - [git workflow](https://github.com/kubernetes/community/blob/master/contributors/guide/github-workflow.md)
+- [Contributor Summit NA 2019: Keeping the Bar High - How to be a bad ass Code Reviewer](https://www.youtube.com/watch?v=OZVv7-o8i40)
+
 ## Understand vanity redirects 
 
 - go imports (k8s.io/foo --> github.com/kubernetes/foo and sigs.k8s.io/bar --> github.com/kubernetes-sigs/bar)

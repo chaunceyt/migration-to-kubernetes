@@ -98,7 +98,7 @@ ExecStart=/usr/bin/kubelet \
 Run the following commands
 
 ```
-systemctl daemon-reload
+systemctl daemon-relaod
 systemctl start kubelet
 systemctl status kubelet
 systemctl enable kubelet
@@ -197,7 +197,6 @@ cd ~/path/to/development/directory
 git clone https://github.com/kubernetes/kubernetes
 cd kubernetes
 make WHAT=cmd/kubelet
-mkdir /etc/kubelet-standalone
 cp _output/bin/kubelet /usr/local/bin/kubelet
 
 # ensure executable is in your path.
@@ -227,3 +226,8 @@ failSwapFalse: false
 serializeImagePulls: true
 fileCheckFrequency: 20s
 ```
+
+### kubeletctl
+
+- https://github.com/cyberark/kubeletctl
+- https://github.com/cyberark/kubeletctl/blob/master/API_TABLE.md
