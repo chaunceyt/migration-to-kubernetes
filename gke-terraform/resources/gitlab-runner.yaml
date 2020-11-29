@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fake-gitlab-runner
+  name: fake-gitlab-runner
+spec:
+  selector:
+    matchLabels:
+      app: fake-gitlab-runner
+  template:
+    metadata:
+      labels:
+        app: fake-gitlab-runner
+    spec:
+      containers:
+      - image: nginx
+        name: gitlab-runner
+      tolerations:
+      - key: "type"
+        operator: "Equal"
+        value: "builder"

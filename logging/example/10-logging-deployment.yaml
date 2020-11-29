@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fakelogs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fakelogs
+  template:
+    metadata:
+      labels:
+        app: fakelogs
+    #I have chosen user 1000 on every container because logrotate will not run as root.
+    spec:
+      containers:
+      - name: fakelogs
+        image: cloudhero/fakelogs
+        command: ["/bin/sh","-c"]
+        args: ["./main > /app/log/app.log"]
+        volumeMounts:
+        - name: log-volume
+          mountPath: /app/log
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 1000
+      - name: fluentbit
+        image: fluent/fluent-bit:1.0.6
+        volumeMounts:
+        - name: log-volume
+          mountPath: /app/log
+        - name: config
+          mountPath: /fluent-bit/etc/fluent-bit.conf
+          subPath: fluent-bit.conf
+        - name: config
+          mountPath: /fluent-bit/etc/parsers_springboot.conf
+          subPath: parsers_springboot.conf
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 1000
+      - name: logrotate
+        image: cloudhero/logrotate
+        volumeMounts:
+        - name: log-volume
+          mountPath: /app/log
+        - name: config
+          mountPath: /etc/logrotate.conf
+          subPath: logrotate.conf
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 1000
+      volumes:
+      - name: log-volume
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: fakelogs-configmap

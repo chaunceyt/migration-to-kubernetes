@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp
+  name: webapp
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      volumes:
+        - name: shared-logs
+          emptyDir: {}
+      containers:
+      - name: sidecar
+        image: busybox
+        command: ["sh","-c","while true; do cat /var/log/nginx/access.log /var/log/nginx/error.log; sleep 30; done"]
+        volumeMounts:
+          - name: shared-logs
+            mountPath: /var/log/nginx
+      - name: webapp
+        image: nginx
+        volumeMounts:
+          - name: shared-logs
+            mountPath: /var/log/nginx
