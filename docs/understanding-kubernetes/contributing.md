@@ -131,3 +131,53 @@ kubetest --provider=skeleton \
 - [Release Special Interest Group](https://github.com/kubernetes/community/tree/master/sig-release)
 - [Shadow Roles Throughout the Kubernetes Ecosystem](https://github.com/kubernetes/community/blob/master/mentoring/programs/shadow-roles.md)
 
+
+## Kubernetes CI
+
+###Slack channel to follow
+
+- `#release-ci-signal`
+- `#sig-release`
+- `#sig-testing`
+- `#testing-ops`
+
+**Repo:** https://github.com/kubernetes/test-infra
+
+**Tasks:** Find, log determine root cause, fix flakes
+
+Main categories of test failures and flakes:
+
+- Bug in the code being tested
+- Bug in the test
+- Issue with infrastructure or tooling
+
+###Key dashboards for a release
+
+- https://testgrid.k8s.io/sig-release-master-blocking
+- https://testgrid.k8s.io/sig-release-master-informing
+
+###Prow
+
+> Kubernetes based CI/CD system. Jobs can be triggered by various types of events and report their status to many different services. In addition to job execution, Prow provides GitHub automation in the form of policy enforcement, chat-ops via /foo style commands, and automatic PR merging. ~ [README.md](https://github.com/kubernetes/test-infra/tree/master/prow)
+
+###Spyglass
+> A pluggable artifact viewer framework for Prow. It collects artifacts (usually files in a storage bucket) from various sources and distributes them to registered viewers, which are responsible for consuming them and rendering a view. ~ [README.md](https://github.com/kubernetes/test-infra/blob/master/prow/spyglass/README.md)
+
+###Tide
+> Tide is a Prow component for managing a pool of GitHub PRs that match a given set of criteria. It will automatically retest PRs that meet the criteria ("tide comes in") and automatically merge them when they have up-to-date passing test results ("tide goes out"). ~ [README.md](https://github.com/kubernetes/test-infra/tree/master/prow/tide)
+
+
+
+###Triage 
+
+> Triage identifies clusters of similar test failures across all jobs. ~ [README.md](https://github.com/kubernetes/test-infra/tree/master/triage)
+- https://go.k8s.io/triage
+
+
+###Hound 
+- search codebase from errors in logs
+- https://cs.k8s.io/
+
+
+
+
