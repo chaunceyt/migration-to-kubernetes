@@ -2,18 +2,42 @@
 
 Responsible for "making sure that Pods are matched to Nodes so that Kubelet can run them"
 
+[Kubernetes Scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/)
+[Scheduling policies](https://kubernetes.io/docs/reference/scheduling/policies/)
+[Scheduling Framework](https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/)
+
+
+**Scheduling stage**
+
+- Queue
+- Prefilter
+- Filter
+- PreScore
+- Score
+- Normalise score
+- Notifier
+- Binding policies
+
+**Binding stage**
+
+- WaitOnPermit
+- PreBind
+- Bind
+- PostBind
+
+
 Filter stage - filter out nodes
 
-Predicates
+[Predicates](https://kubernetes.io/docs/reference/scheduling/policies/#predicates)
 
 - Hard constraints (Memory requirement, nodeSelector)
 
-Priorities
+[Priorities](https://kubernetes.io/docs/reference/scheduling/policies/#priorities)
 
 - Soft constraints (spreading)
 
  
-Score stage -  select Nnde with the highest score among the feasible ones to run the Pod. 
+[Score stage](https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/#scoring) -  select Nnde with the highest score among the feasible ones to run the Pod. 
 
 
 ### Assigning pods to nodes using
@@ -261,7 +285,7 @@ spec:
 ```
 
     
-### Sources
+### Additional Sources
 
 - https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/
 - https://kubernetes.io/docs/concepts/scheduling-eviction/scheduler-perf-tuning/
