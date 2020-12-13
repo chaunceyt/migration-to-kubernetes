@@ -2,9 +2,9 @@
 
 Responsible for "making sure that Pods are matched to Nodes so that Kubelet can run them"
 
-[Kubernetes Scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/)
-[Scheduling policies](https://kubernetes.io/docs/reference/scheduling/policies/)
-[Scheduling Framework](https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/)
+- [Kubernetes Scheduler](https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/)
+- [Scheduling policies](https://kubernetes.io/docs/reference/scheduling/policies/)
+- [Scheduling Framework](https://kubernetes.io/docs/concepts/scheduling-eviction/scheduling-framework/)
 
 
 **Scheduling stage**
