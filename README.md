@@ -85,6 +85,6 @@ Re: Confirmation #2 "a process triggers the creation of a web environment..."
 
 * A commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl). I don't envision using this tool for production. The primary purpose of this particular effort it learning to use go for ops tools.
 * A Golang [Kubernetes operator](https://github.com/chaunceyt/webproject-operator) that creates/manages WebProjects
-* A Golang [Kubernetes operator](https://github.com/chaunceyt/webproject-operator) that creates/manages Redis
+* A Golang [Kubernetes operator](https://github.com/chaunceyt/redis-operator) that creates/manages Redis
 
 
