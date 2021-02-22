@@ -79,14 +79,12 @@ We need to create a plan to migrate to GKE & Gitlab and implement said plan.
 4. Each project should have an **Apache**, **Caching** and **Database** container by default.
 5. Tech leads should be able to troubleshoot their project environments
 
-## Proof of Concept
+## Proof of Concepts
 
 Re: Confirmation #2 "a process triggers the creation of a web environment..."
 
-I started working a commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl). I don't envision using this tool for production. The primary purpose of this particular effort it learning to use go for ops tools.
+* A commandline tool that creates many of the services listed above. Initial start of that can be found [here](webproject-ctl). I don't envision using this tool for production. The primary purpose of this particular effort it learning to use go for ops tools.
+* A Golang [Kubernetes operator](https://github.com/chaunceyt/webproject-operator) that creates/manages WebProjects
+* A Golang [Kubernetes operator](https://github.com/chaunceyt/webproject-operator) that creates/manages Redis
 
-Things missing
 
-- ConfigMap for environmental variables
-- ElasticSearch option
-- Delete workload (WIP)
